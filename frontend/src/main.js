@@ -1,5 +1,8 @@
 import { Preload } from './scenes/Preload.js';
+import { Menu } from './scenes/Menu.js';
 import { Login } from './scenes/Login.js';
+import { Register } from './scenes/Register.js';    
+
 
 const config = {
     type: Phaser.AUTO,
@@ -15,7 +18,9 @@ const config = {
     },
     scene: [
         Preload,
-        Login
+        Menu,
+        Login,
+        Register
     ],
     scale: {
         mode: Phaser.Scale.FIT,
