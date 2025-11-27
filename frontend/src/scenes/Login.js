@@ -1,7 +1,6 @@
 import { GameAPI } from "../api_client.js";
 
 export class Login extends Phaser.Scene {
-
     constructor() {
         super('Login');
     }
@@ -13,25 +12,21 @@ export class Login extends Phaser.Scene {
 
         const element = this.add.dom(width / 2, height / 2).createFromCache('form_login');
         element.setOrigin(0.5);
-
         element.addListener('click');
-        // element.on('click', async (event) => {
-        //     if (event.target.name === 'loginBtn') {
-        //         const userInput = element.getChildByName('user');
-        //         const passInput = element.getChildByName('pass');
 
-        //         // Chama o PHP
-        //         const resposta = await GameAPI.login(userInput.value, passInput.value);
+        element.on('click', (event) => {
+            if (event.target.id === 'loginBtn') {
+                console.log('Login Realizado');
+            }
 
-        //         if (resposta.status === 'sucesso') {
-        //             // Salva ID e vai pro jogo
-        //             this.registry.set('user_id', resposta.user_id);
-        //             // this.scene.start('Menu'); // Futuramente vai pro Menu
-        //             console.log("LOGADO COM SUCESSO!");
-        //         } else {
-        //             alert('Erro: ' + resposta.msg);
-        //         }
-        //     }
-        // });
+            if (event.target.id === 'registerLink') {
+                this.scene.start('Register');
+            }
+
+            if (event.target.id === 'previousLink') {
+                this.scene.start('Menu');
+            }
+        });
+
     }
 }
