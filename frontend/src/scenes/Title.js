@@ -1,10 +1,10 @@
 import { GameAPI } from "../api_client.js";
-import { Button } from "../components/button.js";
+import { Button } from "../components/Button.js";
 
-export class Menu extends Phaser.Scene {
+export class Title extends Phaser.Scene {
     
     constructor() {
-        super('Menu');
+        super('Title');
     }
 
     create() {

@@ -1,7 +1,8 @@
 import { Preload } from './scenes/Preload.js';
-import { Menu } from './scenes/Menu.js';
+import { Title } from './scenes/Title.js';
 import { Login } from './scenes/Login.js';
 import { Register } from './scenes/Register.js';    
+import { MainMenu } from './scenes/MainMenu.js';    
 
 
 const config = {
@@ -18,9 +19,10 @@ const config = {
     },
     scene: [
         Preload,
-        Menu,
+        Title,
         Login,
-        Register
+        Register,
+        MainMenu
     ],
     scale: {
         mode: Phaser.Scale.FIT,

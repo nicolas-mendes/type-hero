@@ -16,7 +16,7 @@ export class Login extends Phaser.Scene {
 
         element.on('click', (event) => {
             if (event.target.id === 'loginBtn') {
-                console.log('Login Realizado');
+                this.scene.start('MainMenu');
             }
 
             if (event.target.id === 'registerLink') {
@@ -24,7 +24,7 @@ export class Login extends Phaser.Scene {
             }
 
             if (event.target.id === 'previousLink') {
-                this.scene.start('Menu');
+                this.scene.start('Title');
             }
         });
 
