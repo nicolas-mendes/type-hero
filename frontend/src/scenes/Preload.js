@@ -11,14 +11,11 @@ export class Preload extends Phaser.Scene {
         this.load.image('title', 'assets/ui/title.png');
         this.load.image('button_bg', 'assets/ui/button_bg.png');
         this.load.image('window_bg', 'assets/ui/window_bg.png');
-
-        // Imagens do Jogo
-        // this.load.spritesheet('hero', 'assets/hero_idle.png', { frameWidth: 64, frameHeight: 64 });
-        // this.load.image('boss', 'assets/boss_monster.png');
         
         // HTML Templates
         this.load.html('form_login', 'assets/html/login.html');
         this.load.html('form_register', 'assets/html/register.html');
+        
     }
 
     create() {

@@ -32,4 +32,5 @@ export const GameAPI = {
         return await postData('auth/login.php', { usuario, senha });
     },
 
+
 };
