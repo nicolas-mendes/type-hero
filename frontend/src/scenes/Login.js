@@ -16,6 +16,8 @@ export class Login extends Phaser.Scene {
 
         element.on('click', (event) => {
             if (event.target.id === 'loginBtn') {
+                const userInput = element.getChildByName('user');
+                const passInput = element.getChildByName('pass');
                 this.scene.start('MainMenu');
             }
 
