@@ -31,7 +31,7 @@ export class MainMenu extends Phaser.Scene {
 
         const avatar = this.add.circle(0, -50, 50, 0xbd00ff);
         const userName = this.add.text(0, 20, "Aluno UFPR", { fontSize: '20px' }).setOrigin(0.5);
-
+        const id= "";
         const btnLogout = new Button(this, 0, 120, "SAIR", 150, 40, () => {
             this.scene.start('Login');
         });
@@ -51,6 +51,9 @@ export class MainMenu extends Phaser.Scene {
             console.log("Criar Nova Liga");
               
             winLeagues.remove([txtLigaInfo, btnRanking,btnNovaLiga], false);
+            txtLigaInfo.setVisible(false);
+            btnRanking.setVisible(false);
+            btnNovaLiga.setVisible(false);
             const inputNomeLiga = this.add.dom(0, -70).createFromHTML(`
                 <input type="text" id="inputLiga" style="width:180px; padding:5px;" placeholder="Nome da Liga">
             `);
@@ -58,14 +61,18 @@ export class MainMenu extends Phaser.Scene {
                 <input type="text" id="inputPalavraChave" style="width:180px; padding:5px;" placeholder="Palavra chave para liga">
             `);
 
-            const btnCriar = new Button(this, 0, 40, "CONFIRMAR", 200, 40, () => {
-                const nome = document.getElementById("inputLiga").value;
-                console.log("Criou liga:", nome);
+            const btnCriar = new Button(this, 0, 40, "CONFIRMAR", 200, 40, async () => {
+                const nomeLiga = document.getElementById("inputLiga").value;
+                const palavraLiga = document.getElementById("inputLiga").value;
+                const resultado = await GameAPI.CriarLiga(nomeLiga,palavraLiga,id);
+                console.log("Criou liga:", nomeLiga);
             });
-
             const btnVoltar = new Button(this, 0, 100, "Voltar", 200, 40, () =>{
                 winLeagues.remove([inputNomeLiga, btnCriar, btnVoltar,inputPalavraChave], true)
                 winLeagues.add([txtLigaInfo, btnRanking, btnNovaLiga]);
+                txtLigaInfo.setVisible(true);
+                btnRanking.setVisible(true);
+                btnNovaLiga.setVisible(true);
             });
             winLeagues.add([inputNomeLiga, btnCriar, btnVoltar,inputPalavraChave]);
         });
