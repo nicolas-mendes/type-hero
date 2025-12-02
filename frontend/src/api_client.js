@@ -32,5 +32,9 @@ export const GameAPI = {
         return await postData('auth/login.php', { usuario, senha });
     },
 
+    ligas: async (usuario, senha) => {
+        return await postData('auth/login.php', { usuario, senha });
+    },
+
 
 };

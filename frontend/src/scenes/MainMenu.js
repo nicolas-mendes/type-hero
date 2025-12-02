@@ -49,6 +49,25 @@ export class MainMenu extends Phaser.Scene {
 
         const btnNovaLiga = new Button(this, 0, 110, "CRIAR LIGA", 200, 40, () => {
             console.log("Criar Nova Liga");
+              
+            winLeagues.remove([txtLigaInfo, btnRanking,btnNovaLiga], false);
+            const inputNomeLiga = this.add.dom(0, -70).createFromHTML(`
+                <input type="text" id="inputLiga" style="width:180px; padding:5px;" placeholder="Nome da Liga">
+            `);
+            const inputPalavraChave = this.add.dom(0, -20).createFromHTML(`
+                <input type="text" id="inputPalavraChave" style="width:180px; padding:5px;" placeholder="Palavra chave para liga">
+            `);
+
+            const btnCriar = new Button(this, 0, 40, "CONFIRMAR", 200, 40, () => {
+                const nome = document.getElementById("inputLiga").value;
+                console.log("Criou liga:", nome);
+            });
+
+            const btnVoltar = new Button(this, 0, 100, "Voltar", 200, 40, () =>{
+                winLeagues.remove([inputNomeLiga, btnCriar, btnVoltar,inputPalavraChave], true)
+                winLeagues.add([txtLigaInfo, btnRanking, btnNovaLiga]);
+            });
+            winLeagues.add([inputNomeLiga, btnCriar, btnVoltar,inputPalavraChave]);
         });
 
         winLeagues.add([txtLigaInfo, btnRanking, btnNovaLiga]);

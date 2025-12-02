@@ -27,7 +27,7 @@ try {
         $datausuario = $stmt->fetch(PDO::FETCH_ASSOC);
         $senha_hash_db = $datausuario['senha_hash']; 
 
-    if (password_verify($senha_digitada, $senha_hash_db)) {
+    if (password_verify($senha, $senha_hash_db)) {
         unset($datausuario['senha_hash']);
         echo json_encode(["status" => "sucesso", "msg" => "Salvo ID: " . $pdo->lastInsertId()]);
     } else {
