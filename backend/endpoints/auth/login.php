@@ -18,15 +18,23 @@ try {
     $json = file_get_contents('php://input');
     $dados = json_decode($json, true);
 
-    if (isset($dados['feedback'])) {
-        $stmt = $pdo->prepare("INSERT INTO teste_log (mensagem) VALUES (?)");
-        $stmt->execute([$dados['feedback']]);
+    if (isset($dados['usuario']) && isset($dados['senha'])) {
+        $usuario=$dados['usuario'];
+        $senha=$dados['senha'];
+        $stmt = $pdo->prepare("SELECT * FROM Usuario 
+        WHERE nomeuse = ?");
+        $stmt->execute([$usuario]);
+        $datausuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        $senha_hash_db = $datausuario['senha_hash']; 
+
+    if (password_verify($senha_digitada, $senha_hash_db)) {
+        unset($datausuario['senha_hash']);
         echo json_encode(["status" => "sucesso", "msg" => "Salvo ID: " . $pdo->lastInsertId()]);
     } else {
         echo json_encode(["status" => "erro", "msg" => "Dados inválidos ou JSON malformado"]);
     }
-
-} catch (PDOException $e) {
+    
+}} catch (PDOException $e) {
     http_response_code(500); 
     echo json_encode(["status" => "erro_sql", "msg" => $e->getMessage()]);
 }
