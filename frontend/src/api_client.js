@@ -32,37 +32,49 @@ export const GameAPI = {
     // nome_metodo: async (campo01,campo02,campo03,...) => {
     //     return await postData('diretório-no-backend/arquivo-responsável.php',{campo01,campo02,campo03..});
     // },
-    
+
     //Autenticação
     validateSession: async () => {
         return await postData('auth/validate_session.php', {});
     },
-    
+
     login: async (user, password) => {
         return await postData('auth/login.php', { user, password });
     },
-    
+
     register: async (user, password, password_confirm) => {
         return await postData('auth/register.php', { user, password, password_confirm });
     },
 
     //Ligas
     createLeague: async (league_name, league_password) => {
-        return await postData('league/create.php', { league_name, league_password});
-    },
-    
-    listLeague: async (page = 1, search="") => {
-        return await postData('league/list.php', { page, search});
+        return await postData('league/create.php', { league_name, league_password });
     },
 
-    getLeagueDetails: async (leagueId) => {
-        return await postData('league/get_info.php', { league_id: leagueId });
+    listLeague: async (page = 1, search = "") => {
+        return await postData('league/list.php', { page, search });
     },
-    
+
+    getLeagueDetails: async (leagueId, rankFilter) => {
+        return await postData('league/get_info.php', { leagueId, rankFilter });
+    },
+
     joinLeague: async (leagueId, attemptPassword) => {
         return await postData('league/join.php', { leagueId, attemptPassword });
     },
 
-    
+    getLeagueMembers: async (leagueId) => {
+        return await postData('league/get_members.php', { leagueId });
+    },
+
+    updateLeague: async (leagueId, name, password) => {
+        return await postData('league/update.php', { leagueId, name, password });
+    },
+
+    kickMember: async (leagueId, targetUserId) => {
+        return await postData('league/kick.php', { leagueId, targetUserId });
+    },
+
+
 
 };

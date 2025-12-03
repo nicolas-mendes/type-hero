@@ -143,7 +143,7 @@ $sql = "
         `max_level_reached` INT NOT NULL,
         `total_score` INT NOT NULL,
         `total_time_seconds` INT NOT NULL,
-        `acurracy` INT NOT NULL,
+        `accuracy` INT NOT NULL,
         `total_words` INT NOT NULL,
         `avg_wpm` INT NOT NULL,
         `played_at` DATETIME DEFAULT CURRENT_TIMESTAMP,

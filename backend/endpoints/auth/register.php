@@ -54,6 +54,8 @@ try {
     $cleanStmt->execute([$userId]);
     $stmtSession = $pdo->prepare("INSERT INTO user_sessions (user_id, token, expires_at) VALUES (?, ?, ?)");
     $stmtSession->execute([$userId, $token, $expire]);
+    $stmtJoin = $pdo->prepare("INSERT INTO league_members (league_id, user_id) VALUES (?, ?)");
+    $stmtJoin->execute([1, $userId]);
 
     echo json_encode([
         "status" => "sucesso",
