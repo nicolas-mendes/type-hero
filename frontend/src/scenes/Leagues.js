@@ -64,23 +64,46 @@ export class Leagues extends Phaser.Scene {
 
     async showLeagueDetails(leagueId) {
         const { width, height } = this.scale;
-
+        const filterY = 160;
         this.switchTab('ranking');
-
         this.viewRanking.removeAll(true);
 
         if (this.domJoinPassword) this.domJoinPassword.setVisible(false);
-
         if (this.domRanking) this.domRanking.setVisible(false);
 
         const loadingTxt = this.add.text(width / 2, 200, "Carregando dados da liga...", { fontSize: '24px' }).setOrigin(0.5);
         this.viewRanking.add(loadingTxt);
 
         try {
-            const response = await GameAPI.getLeagueDetails(leagueId);
+            if (!this.rankFilter) this.rankFilter = 'weekly';
+            const response = await GameAPI.getLeagueDetails(leagueId, this.rankFilter);
 
             if (response.status === 'sucesso') {
                 loadingTxt.destroy();
+                const filterY = 160; // Posição acima da tabela
+
+                // Botão SEMANAL
+                const colorWeekly = this.rankFilter === 'weekly' ? 0x00ff00 : 0x555555;
+                const btnWeekly = new Button(this, width / 2 - 80, filterY, "SEMANAL", 150, 35, () => {
+                    if (this.rankFilter !== 'weekly') {
+                        this.rankFilter = 'weekly';
+                        this.showLeagueDetails(leagueId); // Recarrega a tela com novo filtro
+                    }
+                });
+                // Hack visual: Pintar o botão para mostrar qual está ativo
+                btnWeekly.background.setTint(colorWeekly);
+
+                // Botão GERAL
+                const colorAllTime = this.rankFilter === 'all_time' ? 0x00ff00 : 0x555555;
+                const btnAllTime = new Button(this, width / 2 + 80, filterY, "GERAL", 150, 35, () => {
+                    if (this.rankFilter !== 'all_time') {
+                        this.rankFilter = 'all_time';
+                        this.showLeagueDetails(leagueId);
+                    }
+                });
+                btnAllTime.background.setTint(colorAllTime);
+
+                this.viewRanking.add([btnWeekly, btnAllTime]);
 
                 const info = response.data.info;
                 const relation = response.data.user_relation;
@@ -97,15 +120,16 @@ export class Leagues extends Phaser.Scene {
                 this.viewRanking.add([title, subTitle]);
 
                 if (!this.domRanking) {
-                    this.domRanking = this.add.dom(width / 2, height / 2 + 50).createFromCache('table_ranking');
+                    this.domRanking = this.add.dom(width / 2, height / 1.5).createFromCache('table_infoLeague');
                 }
-                this.domRanking.setVisible(true); // Mostra a tabela
+                this.domRanking.setVisible(true);
 
                 const tbody = this.domRanking.getChildByID('rankingBody');
                 if (tbody) {
                     let rows = "";
-                    if (rankingData.length === 0) {
-                        rows = "<tr><td colspan='3' class='p-4 text-center'>Sem pontuações.</td></tr>";
+                    if (response.data.ranking_preview.length === 0) {
+                        const msg = this.rankFilter === 'weekly' ? "Ninguém pontuou esta semana." : "Sem dados.";
+                        rows = `<tr><td colspan='3' class='p-4 text-center text-gray-400'>${msg}</td></tr>`;
                     } else {
                         rankingData.forEach((r, index) => {
                             // Destaque para o top 3
@@ -123,7 +147,7 @@ export class Leagues extends Phaser.Scene {
 
                 if (relation.is_owner) {
                     const btnManage = new Button(this, width * 0.85, 100, "GERENCIAR", 150, 40, () => {
-                        console.log("Admin Panel");
+                        this.openAdminPanel(leagueId, info.name);
                     });
                     this.viewRanking.add(btnManage);
                 }
@@ -142,9 +166,6 @@ export class Leagues extends Phaser.Scene {
                         let attemptPassword = null;
 
                         if (info.is_private) {
-
-                            // 1. Se o input AINDA NÃO EXISTE ou ESTÁ ESCONDIDO:
-                            // Cria/Mostra ele e PARA AQUI (não chama API ainda)
                             if (!this.domJoinPassword || !this.domJoinPassword.visible) {
 
                                 if (!this.domJoinPassword) {
@@ -156,18 +177,10 @@ export class Leagues extends Phaser.Scene {
 
                                 const inputEl = this.domJoinPassword.getChildByID('joinPassInput');
                                 if (inputEl) inputEl.value = "";
-
                                 this.domJoinPassword.setVisible(true);
-
-                                // Muda o texto do botão para indicar o próximo passo
-                                // (Acessando o texto dentro do container do botão Button.js)
-                                // Supondo que textObject seja público ou acessível via getAt
-                                // Se não tiver acesso fácil, apenas ignore ou recrie o botão.
-                                return; // <--- IMPEDE O JOIN, ESPERA O USUÁRIO DIGITAR
+                                return;
                             }
 
-                            // 2. Se o input JÁ ESTÁ VISÍVEL (Usuário clicou de novo):
-                            // Captura o valor digitado
                             const inputEl = this.domJoinPassword.getChildByID('joinPassInput');
                             attemptPassword = inputEl ? inputEl.value : "";
 
@@ -177,26 +190,30 @@ export class Leagues extends Phaser.Scene {
                             }
                         }
 
-                        // AGORA SIM CHAMA A API
-                        // Se pública, attemptPassword é null. Se privada, é o texto.
-                        const res = await GameAPI.joinLeague(leagueId, attemptPassword);
-
-                        if (res.status === 'sucesso') {
-                            alert("Bem vindo à liga!");
-                            // Esconde a senha para não ficar sobrando na tela
-                            if (this.domJoinPassword) this.domJoinPassword.setVisible(false);
-                            this.showLeagueDetails(leagueId);
-                        } else {
-                            alert(res.msg);
+                        try {
+                            const res = await GameAPI.joinLeague(leagueId, attemptPassword);
+                            if (res.status === 'sucesso') {
+                                alert("Bem vindo à liga!");
+                                if (this.domJoinPassword) this.domJoinPassword.setVisible(false);
+                                this.showLeagueDetails(leagueId); // Recarrega a tela
+                            } else {
+                                alert(res.msg);
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            alert("Erro ao entrar na liga.");
                         }
                     });
 
                     this.viewRanking.add(btnJoin);
                 }
-            } 
-            else {
+            }
+            else if (relation.is_member) {
                 const txtMember = this.add.text(width * 0.15, 100, "✅ MEMBRO", { color: '#00ff00' }).setOrigin(0.5);
                 this.viewRanking.add(txtMember);
+            }
+            else {
+                loadingTxt.setText("Erro: " + response.msg);
             }
 
         } catch (e) {
@@ -356,7 +373,7 @@ export class Leagues extends Phaser.Scene {
                         alert(`Liga "${league_name}" criada!`);
                         this.fetchLeagues();
 
-                        this.time.delayedCall(5000, () => {
+                        this.time.delayedCall(2500, () => {
                             resetButtonState(btnCreateLeague);
                         });
 
@@ -370,5 +387,130 @@ export class Leagues extends Phaser.Scene {
                 }
             }
         });
+    }
+
+    openAdminPanel(leagueId, currentLeagueName) {
+        const { width, height } = this.scale;
+
+        // Limpeza de segurança (Correção do deslocamento)
+        if (this.currentAdminBlocker) this.currentAdminBlocker.destroy();
+        if (this.currentDomAdmin) this.currentDomAdmin.destroy();
+
+        // 1. Blocker
+        this.currentAdminBlocker = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
+        this.currentAdminBlocker.setInteractive();
+
+        // 2. DOM (Usando this.currentDomAdmin consistentemente)
+        this.currentDomAdmin = this.add.dom(width / 2, height / 2).createFromCache('admin_panel');
+        this.currentDomAdmin.setOrigin(0.5);
+        this.currentDomAdmin.updateSize(); // Correção do bug visual
+
+        // --- CORREÇÃO 1: Usar this.currentDomAdmin aqui também ---
+        const inputName = this.currentDomAdmin.getChildByID('editName');
+        inputName.value = currentLeagueName;
+
+        // Função para carregar membros
+        const loadMembers = async () => {
+            // --- CORREÇÃO 2: Usar this.currentDomAdmin ---
+            const tbody = this.currentDomAdmin.getChildByID('membersBody');
+
+            // Segurança: Se o painel foi fechado enquanto carregava, para tudo
+            if (!tbody) return;
+
+            tbody.innerHTML = '<tr><td class="p-2 text-gray-500">Carregando...</td></tr>';
+
+            try {
+                const res = await GameAPI.getLeagueMembers(leagueId);
+
+                if (res.status === 'sucesso') {
+                    let rows = "";
+                    res.data.forEach(member => {
+                        const isMe = (member.id == this.registry.get('user_id'));
+
+                        // Botão de expulsar (não aparece para si mesmo)
+                        const kickBtn = isMe ? '<span class="text-xs text-green-500">DONO</span>' :
+                            `<button class="btn-kick text-red-500 hover:text-red-300 font-bold text-xs border border-red-900 px-2 py-1 rounded cursor-pointer" 
+                              data-id="${member.id}" data-name="${member.username}">EXPULSAR</button>`;
+
+                        rows += `
+                            <tr class="border-b border-gray-800 hover:bg-gray-900">
+                                <td class="p-2">${member.username}</td>
+                                <td class="p-2 text-right">${kickBtn}</td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = rows;
+                    this.currentDomAdmin.updateSize();
+                } else {
+                    tbody.innerHTML = `<tr><td class="text-red-500 p-2">${res.msg}</td></tr>`;
+                }
+            } catch (error) {
+                console.error(error);
+                if (tbody) tbody.innerHTML = `<tr><td class="text-red-500 p-2">Erro de conexão</td></tr>`;
+            }
+
+        };
+
+        // Listeners
+        this.currentDomAdmin.addListener('click');
+        this.currentDomAdmin.on('click', async (event) => {
+            // --- CORREÇÃO 3: Definir target ---
+            const target = event.target;
+
+            // 1. FECHAR
+            if (target.id === 'btnCloseAdmin') {
+                this.currentDomAdmin.destroy();
+                this.currentAdminBlocker.destroy();
+                this.currentDomAdmin = null;
+                this.currentAdminBlocker = null;
+                this.showLeagueDetails(leagueId);
+            }
+
+            // 2. SALVAR
+            if (target.id === 'btnSaveConfig') {
+                // CORREÇÃO: Usar this.currentDomAdmin para buscar inputs
+                const newName = this.currentDomAdmin.getChildByID('editName').value;
+                const newPass = this.currentDomAdmin.getChildByID('editPass').value;
+
+                if (!newName) return alert("Nome não pode ser vazio");
+
+                target.innerText = "Salvando...";
+                target.disabled = true;
+
+                try {
+                    const res = await GameAPI.updateLeague(leagueId, newName, newPass);
+
+                    if (res.status === 'sucesso') {
+                        alert("Dados atualizados!");
+                    } else {
+                        alert(res.msg);
+                    }
+                } catch (e) {
+                    alert("Erro de conexão");
+                } finally {
+                    target.innerText = "SALVAR ALTERAÇÕES";
+                    target.disabled = false;
+                }
+            }
+
+            // 3. EXPULSAR
+            if (target.classList.contains('btn-kick')) {
+                const userId = target.dataset.id;
+                const userName = target.dataset.name;
+
+                // Usamos o confirm nativo ou seu modal customizado
+                if (confirm(`Tem certeza que deseja expulsar ${userName}?`)) {
+                    const res = await GameAPI.kickMember(leagueId, userId);
+                    if (res.status === 'sucesso') {
+                        loadMembers(); // Recarrega a lista
+                    } else {
+                        alert(res.msg);
+                    }
+                }
+            }
+        });
+
+        // Carrega a lista inicial
+        loadMembers();
     }
 }

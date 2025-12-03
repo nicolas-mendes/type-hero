@@ -25,7 +25,7 @@ try {
         exit;
     }
 
-    $leagueId = $data['league_id'] ?? 0;
+    $leagueId = $data['leagueId'] ?? 1;
 
     $sql = "SELECT l.id, l.name, l.owner_id, u.username as owner_name, l.created_at, l.password,
             (SELECT COUNT(*) FROM league_members WHERE league_id = l.id) as member_count
@@ -41,7 +41,6 @@ try {
         exit;
     }
 
-    // 2. Verifica relação do Usuário com a Liga
     $isMember = false;
     $checkMember = $pdo->prepare("SELECT 1 FROM league_members WHERE league_id = ? AND user_id = ?");
     $checkMember->execute([$leagueId, $userId]);
@@ -50,12 +49,17 @@ try {
     }
 
     $isOwner = ($league['owner_id'] == $userId);
+    $filter = $data['rankFilter'] ?? 'all_time';
 
-    $sqlRank = "SELECT u.username, m.total_score 
+    $sqlRank = "SELECT u.username, MAX(m.total_score) as total_score
                 FROM run_history m
                 JOIN users u ON m.user_id = u.id
-                WHERE m.league_id = ?
-                ORDER BY m.total_score DESC LIMIT 5";
+                WHERE m.league_id = ?";
+    if ($filter === 'weekly') {
+        $sqlRank .= " AND m.played_at >= DATE_SUB(NOW(), INTERVAL 1 WEEK)";
+    }
+    $sqlRank .= " GROUP BY m.user_id ORDER BY total_score DESC LIMIT 50";
+
     $stmtRank = $pdo->prepare($sqlRank);
     $stmtRank->execute([$leagueId]);
     $ranking = $stmtRank->fetchAll();
@@ -73,6 +77,7 @@ try {
                 "is_owner" => $isOwner
             ],
             "ranking_preview" => $ranking,
+            "filter_applied" => $filter
         ]
     ]);
 } catch (Exception $e) {
