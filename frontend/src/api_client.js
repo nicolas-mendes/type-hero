@@ -1,12 +1,18 @@
 // URL do Backend Apache
-const BASE_URL = "http://localhost/type-hero/endpoints";
+const BASE_URL = "http://localhost/type-hero/backend/endpoints";
 
 //Função Assíncrona para Comunicação com o backend
 const postData = async (url, data) => {
+    const token = localStorage.getItem('game_token');
+    const dataWithToken = {
+        ...data,
+        auth_token: token
+    };
+
     try {
         const response = await fetch(`${BASE_URL}/${url}`, {
             method: 'POST',
-            body: JSON.stringify(data),
+            body: JSON.stringify(dataWithToken),
             headers: { 'Content-Type': 'application/json' }
         });
 
@@ -28,13 +34,35 @@ export const GameAPI = {
     // },
     
     //Autenticação
-    login: async (usuario, senha) => {
-        return await postData('auth/login.php', { usuario, senha });
+    validateSession: async () => {
+        return await postData('auth/validate_session.php', {});
+    },
+    
+    login: async (user, password) => {
+        return await postData('auth/login.php', { user, password });
+    },
+    
+    register: async (user, password, password_confirm) => {
+        return await postData('auth/register.php', { user, password, password_confirm });
     },
 
-    ligas: async (usuario, senha) => {
-        return await postData('auth/login.php', { usuario, senha });
+    //Ligas
+    createLeague: async (league_name, league_password) => {
+        return await postData('league/create.php', { league_name, league_password});
+    },
+    
+    listLeague: async (page = 1, search="") => {
+        return await postData('league/list.php', { page, search});
     },
 
+    getLeagueDetails: async (leagueId) => {
+        return await postData('league/get_info.php', { league_id: leagueId });
+    },
+    
+    joinLeague: async (leagueId, attemptPassword) => {
+        return await postData('league/join.php', { leagueId, attemptPassword });
+    },
+
+    
 
 };

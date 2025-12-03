@@ -1,43 +1,71 @@
 import { GameAPI } from "../api_client.js";
 
 export class Login extends Phaser.Scene {
-    constructor() {
-        super('Login');
-    }
+    constructor() { super('Login'); }
 
     create() {
+        function resetButtonState(btn) {
+            btn.innerText = "ENTRAR";
+            btn.disabled = false;         
+            btn.style.cursor = "pointer";
+            btn.style.opacity = "1";        
+        }
+
         const { width, height } = this.scale;
-        const bg = this.add.image(width / 2, height / 2, 'background');
-        bg.setDisplaySize(width, height);
+
+        this.add.image(width / 2, height / 2, 'background').setDisplaySize(width, height);
 
         const element = this.add.dom(width / 2, height / 2).createFromCache('form_login');
         element.setOrigin(0.5);
         element.addListener('click');
 
+        const btnLogin = element.node.querySelector('#loginBtn');
         element.on('click', async (event) => {
-
             if (event.target.id === 'loginBtn') {
-                this.scene.start('MainMenu');
+
                 const userInput = element.getChildByName('user');
-                const passInput = element.getChildByName('pass');
-                if (userInput && passInput) {
-                const usuario = userInput.value;
-                const senha = passInput.value;}
-                const resultado = await GameAPI.login(usuario, senha);
-                this.scene.start('MainMenu');
-                if (resultado.status === 'sucesso') {
-                    console.log('Login bem-sucedido:', resultado.msg);
-                    alert('Login bem-sucedido!');
-                    this.scene.start('MainMenu'); // Navega para a próxima cena
-                } else {
-                    console.error('Falha no Login:', resultado.msg);
-                    alert(`Falha no Login: ${resultado.msg}`);
+                const passInput = element.getChildByName('password');
+
+                if (!userInput || !passInput || userInput.value === "" || passInput.value === "") {
+                    alert("Por favor, preencha usuário e senha.");
+                    return;
                 }
 
-            } else {
-                console.error("Campos de usuário/senha não encontrados no DOM.");
+                const user = userInput.value;
+                const password = passInput.value;
+
+                btnLogin.innerText = "Carregando...";
+                btnLogin.disabled = true;
+                btnLogin.style.cursor = "wait";
+                btnLogin.style.opacity = "0.7";
+
+                console.log("Verificando credenciais...");
+
+                try {
+                    const response = await GameAPI.login(user, password);
+
+                    if (response.status === 'sucesso') {
+                        console.log('Login autorizado!');
+                        btnLogin.innerText = "Sucesso!";
+                        btnLogin.style.backgroundColor = "#00ff00";
+
+                        this.registry.set('user_id', response.user_id);
+                        this.registry.set('user_name', response.username);
+
+                        localStorage.setItem('game_token', response.token);
+
+                        window.gameIsActive = true;
+                        this.scene.start('MainMenu');
+                    } else {
+                        alert(`Erro: ${response.msg}`);
+                        this.cameras.main.shake(200, 0.01);
+                        resetButtonState(btnLogin);
+                    }
+                } catch (error) {
+                    console.error("Erro de conexão:", error);
+                    resetButtonState(btnLogin);
+                }
             }
-            
 
             if (event.target.id === 'registerLink') {
                 this.scene.start('Register');
@@ -47,6 +75,5 @@ export class Login extends Phaser.Scene {
                 this.scene.start('Title');
             }
         });
-
     }
 }

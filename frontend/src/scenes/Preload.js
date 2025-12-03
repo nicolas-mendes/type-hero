@@ -15,6 +15,9 @@ export class Preload extends Phaser.Scene {
         // HTML Templates
         this.load.html('form_login', 'assets/html/login.html');
         this.load.html('form_register', 'assets/html/register.html');
+        this.load.html('form_createLeague', 'assets/html/createLeague.html');
+        this.load.html('table_listLeague', 'assets/html/listLeague.html');
+        this.load.html('table_infoLeague', 'assets/html/infoLeague.html');
         
     }
 
