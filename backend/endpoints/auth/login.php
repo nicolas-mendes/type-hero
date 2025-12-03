@@ -1,41 +1,60 @@
 <?php
+require_once __DIR__ . '/../db_connect.php';
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
-header('Content-Type: application/json');
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(["status" => "erro", "msg" => "Método não permitido"]);
+    exit;
+}
 
-// -------------------------------------------------------------------------
+$pdo = getDatabaseConnection();
+
+$json = file_get_contents('php://input');
+$data = json_decode($json, true);
+
+if (!isset($data['user']) || !isset($data['password'])) {
+    echo json_encode(["status" => "erro", "msg" => "Usuário e password são obrigatórios"]);
+    exit;
+}
+
+$user = trim($data['user']);
+$password = $data['password'];
+
 
 try {
-    $pdo = new PDO("mysql:host=DB_HOST;dbname=DB_DATABASE;charset=utf8", "DB_USERNAME", "DB_PASSWORD");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $pdo->prepare("SELECT id, username, password_hash FROM users WHERE username = ?");
+    $stmt->execute([$user]);
 
-    $json = file_get_contents('php://input');
-    $dados = json_decode($json, true);
+    $user = $stmt->fetch();
 
-    if (isset($dados['usuario']) && isset($dados['senha'])) {
-        $usuario=$dados['usuario'];
-        $senha=$dados['senha'];
-        $stmt = $pdo->prepare("SELECT * FROM Usuario 
-        WHERE nomeuse = ?");
-        $stmt->execute([$usuario]);
-        $datausuario = $stmt->fetch(PDO::FETCH_ASSOC);
-        $senha_hash_db = $datausuario['senha_hash']; 
+    if ($user && password_verify($password, $user['password_hash'])) {
 
-    if (password_verify($senha, $senha_hash_db)) {
-        unset($datausuario['senha_hash']);
-        echo json_encode(["status" => "sucesso", "msg" => "Salvo ID: " . $pdo->lastInsertId()]);
+        $token = bin2hex(random_bytes(32));
+        $expire = date('Y-m-d H:i:s', strtotime('+8 hours'));
+
+        $cleanStmt = $pdo->prepare("DELETE FROM user_sessions WHERE user_id = ?");
+        $cleanStmt->execute([$user['id']]);
+        $stmtSession = $pdo->prepare("INSERT INTO user_sessions (user_id, token, expires_at) VALUES (?, ?, ?)");
+        $stmtSession->execute([$user['id'], $token, $expire]);
+
+        echo json_encode([
+            "status" => "sucesso",
+            "msg" => "Login realizado",
+            "user_id" => $user['id'],
+            "username" => $user['username'],
+            "token" => $token
+        ]);
     } else {
-        echo json_encode(["status" => "erro", "msg" => "Dados inválidos ou JSON malformado"]);
+        echo json_encode(["status" => "erro", "msg" => "Credenciais inválidas"]);
     }
-    
-}} catch (PDOException $e) {
-    http_response_code(500); 
-    echo json_encode(["status" => "erro_sql", "msg" => $e->getMessage()]);
+} catch (Exception $e) {
+    echo json_encode(["status" => "erro", "msg" => "Erro interno no servidor"]);
 }
-?>

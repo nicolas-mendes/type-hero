@@ -3,6 +3,7 @@ import { Title } from './scenes/Title.js';
 import { Login } from './scenes/Login.js';
 import { Register } from './scenes/Register.js';    
 import { MainMenu } from './scenes/MainMenu.js';    
+import { Leagues } from './scenes/Leagues.js';
 
 
 const config = {
@@ -22,7 +23,8 @@ const config = {
         Title,
         Login,
         Register,
-        MainMenu
+        MainMenu,
+        Leagues
     ],
     scale: {
         mode: Phaser.Scale.FIT,
@@ -31,4 +33,22 @@ const config = {
 }
 
 new Phaser.Game(config);
-            
+
+window.gameIsActive = false;
+
+// Previne atualizar a página e perder a sessão ativa
+window.addEventListener('beforeunload', function (e) {
+    if (window.gameIsActive) {
+        e.preventDefault(); 
+    }
+});
+
+// Bloquea o comando "CTRL+R", que não é coberto pelo parâmetro 'beforeunload'
+window.addEventListener('keydown', function (e) {
+    if (window.gameIsActive) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R')) {
+            e.preventDefault();
+            console.log("Ctrl+R bloqueado pelo jogo.");
+        }
+    }
+});
