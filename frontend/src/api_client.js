@@ -75,6 +75,14 @@ export const GameAPI = {
         return await postData('league/kick.php', { leagueId, targetUserId });
     },
 
+    exitLeague: async (leagueId) => {
+        return await postData('league/exit.php', { leagueId });
+    },
+    
+    excludeLeague: async (leagueId) => {
+        return await postData('league/exclude.php', { leagueId });
+    },
+
 
 
 };
