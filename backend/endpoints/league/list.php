@@ -21,6 +21,15 @@ try {
     $limit = 5;
     $offset = ($page - 1) * $limit;
 
+    $sqlCount = "SELECT COUNT(*) FROM leagues WHERE name LIKE :search";
+    $stmtCount = $pdo->prepare($sqlCount);
+    $stmtCount->bindValue(':search', "%$search%", PDO::PARAM_STR);
+    $stmtCount->execute();
+    
+    $totalRecords = $stmtCount->fetchColumn();
+    $totalPages = ceil($totalRecords / $limit);
+    if ($totalPages < 1) $totalPages = 1;
+
     $sql = "SELECT l.id, l.name, l.is_default, u.username as owner,
             (SELECT COUNT(*) FROM league_members WHERE league_id = l.id) as member_count
             FROM leagues l
@@ -41,7 +50,8 @@ try {
         "status" => "sucesso",
         "data" => $leagues,
         "page" => $page,
-        "search" => $search
+        "search" => $search,
+        "total_pages" => $totalPages
     ]);
 } catch (Exception $e) {
     echo json_encode(["status" => "erro", "msg" => $e->getMessage()]);

@@ -30,11 +30,17 @@ try {
         echo json_encode(["status" => "erro", "msg" => "Nome da liga é obrigatório"]);
         exit;
     }
-    
+
     $league_name = trim($data['league_name']);
     $league_pass = !empty($data['league_password']) ? $data['league_password'] : null;
-    
     $league_passHash = $league_pass ? password_hash($league_pass, PASSWORD_DEFAULT) : null;
+    
+    $stmt = $pdo->prepare("SELECT id FROM leagues WHERE name = ?");
+    $stmt->execute([$league_name]);
+    if ($stmt->fetch()) {
+        echo json_encode(["status" => "erro", "msg" => "Liga já existe"]);
+        exit;
+    }
 
     $pdo->beginTransaction();
 
