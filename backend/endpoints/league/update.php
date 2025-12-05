@@ -6,7 +6,10 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["status" => "erro", "msg" => "Método inválido"]);
@@ -58,7 +61,7 @@ try {
     $params = [$newName];
 
     if (!empty($data['password'])) {
-        $sql .= ", password = ?"; 
+        $sql .= ", password = ?";
         $params[] = password_hash($data['password'], PASSWORD_DEFAULT);
     }
 
@@ -69,11 +72,9 @@ try {
     $stmtUpdate->execute($params);
 
     echo json_encode([
-        "status" => "sucesso", 
+        "status" => "sucesso",
         "msg" => "Liga atualizada com sucesso!"
     ]);
-
 } catch (Exception $e) {
     echo json_encode(["status" => "erro", "msg" => "Erro ao atualizar: " . $e->getMessage()]);
 }
-?>

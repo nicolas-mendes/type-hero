@@ -14,28 +14,24 @@ export class TypingInput extends Phaser.Events.EventEmitter {
 
         const key = event.key;
 
-        // 1. Backspace
         if (key === 'Backspace') {
             event.preventDefault(); 
             this.emit('backspace');
             return;
         }
 
-        // 2. Barra de Espaço (NOVO)
         if (key === ' ') {
-            event.preventDefault(); // Evita scroll da página
+            event.preventDefault();
             this.emit('type', ' ');
             return;
         }
 
-        // 3. Letras (A-Z, Ç)
         if (key.length === 1 && key.match(/[a-zA-ZçÇ]/)) {
             const char = key.toUpperCase();
             this.emit('type', char);
         }
     }
 
-    // ... (restante igual: enable, disable, destroy)
     enable() { this.enabled = true; }
     disable() { this.enabled = false; }
     destroy() {

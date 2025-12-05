@@ -29,14 +29,10 @@ export class GameScene extends Phaser.Scene {
     create() {
         const { width, height } = this.scale;
 
-        // 1. Cenário
         this.add.image(width / 2, height / 2, 'background').setDisplaySize(width, height).setTint(0x444444);
 
-        // 2. Cria o Player (Instância da Classe)
-        // Posicionado à esquerda
         this.player = new Player(this, 375, height / 2 + 100, this.playerStats);
 
-        // 3. Inicializa Input
         this.inputManager = new TypingInput(this);
 
         this.events.on('shutdown', () => {
@@ -55,30 +51,20 @@ export class GameScene extends Phaser.Scene {
             }
         });
 
-        const btnAbandon = new Button(this, width - 100, 50, "DESISTIR", 150, 40, () => {
+        const btnAbandon = new Button(this, width - 100, 50, "DESISTIR", 130, 40, () => {
             this.handleGiveUp();
-        });
+        },0x550000, 20);
 
-        btnAbandon.background.setTint(0x550000);
-        btnAbandon.textObject.setFontSize(16);
-
-        // 4. Inicia a lógica da fase
         this.startLevel();
     }
 
-    // =================================================================
-    // CONTROLE DE FLUXO DA FASE
-    // =================================================================
-
     async startLevel() {
         try {
-            // CORREÇÃO: Usando level_id (snake_case) conforme retorno do PHP
             const res = await GameAPI.getLevelEnemies(this.runData.level_id);
 
             if (res.status === 'sucesso') {
                 this.enemyQueue = [];
 
-                // Transforma a lista agrupada em fila individual
                 res.enemies.forEach(group => {
                     for (let i = 0; i < group.quantity; i++) {
                         this.enemyQueue.push({
@@ -93,9 +79,7 @@ export class GameScene extends Phaser.Scene {
                     }
                 });
 
-                // Se tiver Boss (Lógica futura)
                 if (this.runData.boss_id) {
-                    // Adicionar lógica de boss aqui
                 }
 
                 if (this.enemyQueue.length > 0) {
@@ -118,12 +102,12 @@ export class GameScene extends Phaser.Scene {
             return;
         }
 
-        // 1. Limpa o inimigo anterior se existir
+        // 1. Limpa o inimigo anterior
         if (this.currentEnemyObject) {
             this.currentEnemyObject.destroy();
         }
 
-        // 2. Pega os dados do próximo
+        // 2. Pega os dados do próximo inimigo
         const nextEnemyData = this.enemyQueue.shift();
 
         // 3. Instancia a Classe Enemy
@@ -149,18 +133,15 @@ export class GameScene extends Phaser.Scene {
 
         if (this.currentEnemyObject && this.currentEnemyObject.active) {
             targetX = this.currentEnemyObject.x;
-            targetY = this.currentEnemyObject.y - 200; // Acima da cabeça
+            targetY = this.currentEnemyObject.y - 200;
         }
 
-        // Feedback Visual
         this.showFloatingText("SUA VEZ!", '#00ff00');
 
         const wordCount = this.playerStats.playerAttackWord;
         const timeLimit = this.playerStats.playerAttackTime;
         const words = WordDictionary.getWords(wordCount);
-        // -----------------------------
 
-        // 3. Cria bloco de ataque
         this.activeTextBlock = new TextBlock(
             this, targetX, targetY, words, timeLimit,
 
@@ -195,9 +176,7 @@ export class GameScene extends Phaser.Scene {
         const wordCount = this.currentEnemyObject.enemyAttackWord;
         const timeLimit = this.currentEnemyObject.enemyAttackTime;
         const words = WordDictionary.getWords(wordCount);
-        // -----------------------------
 
-        // 3. Cria bloco de defesa
         this.activeTextBlock = new TextBlock(
             this, targetX, targetY, words, timeLimit,
 
@@ -219,11 +198,7 @@ export class GameScene extends Phaser.Scene {
     // =================================================================
 
     damageEnemy(amount) {
-        // Usa o método da classe Enemy
         const isDead = this.currentEnemyObject.takeDamage(amount);
-
-        // Animação de ataque do player
-        // this.player.playAttackAnim(); 
 
         if (isDead) {
             this.scoreGainedInThisLevel += 100;
@@ -234,10 +209,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     damagePlayer(amount) {
-        // Usa o método da classe Player
         const isDead = this.player.takeDamage(amount);
 
-        // Atualiza nosso controle local de HP para salvar no banco depois
         this.currentHp = this.player.currentHp;
 
         if (isDead) {
@@ -247,7 +220,7 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
-    // Helper para texto rápido na tela
+
     showFloatingText(msg, color) {
         const { width, height } = this.scale;
         const txt = this.add.text(width / 2, height / 2 - 100, msg, {
@@ -267,18 +240,14 @@ export class GameScene extends Phaser.Scene {
     async handleVictory() {
         const { width, height } = this.scale;
 
-        // 1. Pausa inputs
         this.inputManager.disable();
 
-        // 2. Cria Fundo Escuro
         const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.85);
 
-        // 3. Texto de Título
         const txtTitle = this.add.text(width / 2, height / 2 - 100, "VITÓRIA!", {
             fontSize: '60px', color: '#00ff00', fontStyle: 'bold', fontFamily: '"Orbitron"'
         }).setOrigin(0.5);
 
-        // 4. Loading
         const txtLoading = this.add.text(width / 2, height / 2, "Salvando progresso...", { fontSize: '20px' }).setOrigin(0.5);
 
         try {
@@ -294,12 +263,10 @@ export class GameScene extends Phaser.Scene {
 
             if (res.status === 'proxima_fase') {
 
-                // Mostra stats da fase
                 this.add.text(width / 2, height / 2 - 20, `Pontos da Fase: +${this.scoreGainedInThisLevel}`, { fontSize: '24px' }).setOrigin(0.5);
                 this.add.text(width / 2, height / 2 + 20, `Vida Restante: ${this.currentHp}`, { fontSize: '24px', color: '#ffaaaa' }).setOrigin(0.5);
 
-                // Botão CONTINUAR (Destaque)
-                const btnNext = new Button(this, width / 2, height / 2 + 100, "PRÓXIMO NÍVEL >>", 300, 60, () => {
+                const btnNext = new Button(this, width / 2, height / 2 + 100, "PRÓXIMO NÍVEL >>", 250, 60, () => {
                     const nextData = {
                         ...res.next_level_data,
                         leagueId: this.runData.leagueId,
@@ -311,29 +278,23 @@ export class GameScene extends Phaser.Scene {
                         }
                     };
                     this.scene.start('GameScene', nextData);
-                });
-                btnNext.background.setTint(0x00ff00); // Verde
+                },0x78e08f);
 
-                // Botão SALVAR E SAIR (Secundário)
-                const btnExit = new Button(this, width / 2, height / 2 + 180, "SALVAR E SAIR", 200, 40, () => {
-                    // O progresso JÁ FOI SALVO pelo backend no 'completeLevel'
-                    // Então é só voltar pro menu
+                const btnExit = new Button(this, width / 2, height / 2 + 180, "SALVAR E SAIR", 200, 50, () => {
                     this.scene.start('WorldSelect', { leagueId: this.runData.leagueId });
-                });
-                btnExit.background.setTint(0x555555); // Cinza
+                },0x555555);
 
             }
 
-            // --- CENÁRIO B: ZEROU A LIGA ---
             else if (res.status === 'vitoria_total') {
                 txtTitle.setText("LIGA COMPLETADA!");
-                txtTitle.setColor('#ffd700'); // Dourado
+                txtTitle.setColor('#ffd700');
 
                 this.add.text(width / 2, height / 2, "Parabéns! Você venceu todos os desafios.", { fontSize: '20px' }).setOrigin(0.5);
 
-                new Button(this, width / 2, height / 2 + 100, "VOLTAR AO MENU", 300, 60, () => {
+                new Button(this, width / 2, height / 2 + 100, "VOLTAR AO MENU", 250, 60, () => {
                     this.scene.start('WorldSelect', { leagueId: this.runData.leagueId });
-                });
+                }, 0x3c6382);
             }
 
         } catch (e) {
@@ -413,7 +374,7 @@ export class GameScene extends Phaser.Scene {
 
             if (res.status === 'sucesso') {
                 txtStatus.setText(`Pontuação Final: ${res.final_score}`);
-                txtStatus.setColor('#ffff00'); // Amarelo
+                txtStatus.setColor('#ffff00');
             } else {
                 console.warn(res.msg);
                 txtStatus.setText("Fim de jogo.");
@@ -426,7 +387,7 @@ export class GameScene extends Phaser.Scene {
 
         const btnBack = new Button(this, width / 2, height / 2 + 100, "VOLTAR AO HUB", 250, 60, () => {
             this.scene.start('WorldSelect', { leagueId: this.runData.leagueId });
-        });
+        },0xef4444);
 
         btnBack.setDepth(1002);
     }

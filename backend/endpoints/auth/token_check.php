@@ -1,6 +1,7 @@
 <?php
 
-function authenticateUser($pdo, $token) {
+function authenticateUser($pdo, $token)
+{
     if (!$token) return false;
 
     $stmt = $pdo->prepare("SELECT user_id, expires_at FROM user_sessions WHERE token = ?");

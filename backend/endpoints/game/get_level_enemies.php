@@ -6,12 +6,15 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 try {
     $pdo = getDatabaseConnection();
     $data = json_decode(file_get_contents('php://input'), true);
-    
+
     // Autenticação básica
     if (!authenticateUser($pdo, $data['auth_token'] ?? null)) {
         echo json_encode(["status" => "erro", "msg" => "Auth inválida"]);
@@ -31,7 +34,6 @@ try {
     $enemies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode(["status" => "sucesso", "enemies" => $enemies]);
-
 } catch (Exception $e) {
     echo json_encode(["status" => "erro", "msg" => $e->getMessage()]);
 }

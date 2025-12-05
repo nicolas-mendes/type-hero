@@ -6,7 +6,10 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["status" => "erro", "msg" => "Método inválido"]);
@@ -33,8 +36,7 @@ try {
 
     $leagueId = (int)$data['leagueId'];
 
-    if($leagueId == 1)
-    {
+    if ($leagueId == 1) {
         echo json_encode(["status" => "erro", "msg" => "Você não pode sair da Liga Geral."]);
         exit;
     }
@@ -60,12 +62,10 @@ try {
         $pdo->commit();
 
         echo json_encode(["status" => "sucesso", "msg" => "Você saiu da liga."]);
-
     } catch (Exception $e) {
         $pdo->rollBack();
         throw $e;
     }
-
 } catch (Exception $e) {
     echo json_encode(["status" => "erro", "msg" => "Erro ao sair: " . $e->getMessage()]);
 }

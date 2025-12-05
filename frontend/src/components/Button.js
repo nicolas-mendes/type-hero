@@ -1,59 +1,59 @@
 export class Button extends Phaser.GameObjects.Container {
 
     /**
-     * Cria um botão estilo Sci-Fi usando 9-Slice scaling.
-     * * @param {Phaser.Scene} scene - A cena onde o botão será criado
-     * @param {number} x - Posição X (Centro do botão)
-     * @param {number} y - Posição Y (Centro do botão)
+     * Cria um componente novo de botão.
+     * @param {Phaser.Scene} scene - A cena onde o botão será criado
+     * @param {number} x - Posição X
+     * @param {number} y - Posição Y
      * @param {string} text - O texto a ser exibido
-     * @param {number} width - Largura final do botão (ex: 200, 300)
-     * @param {number} height - Altura final do botão (ex: 60, 80)
+     * @param {number} width - Largura final
+     * @param {number} height - Altura final
      * @param {function} callback - Função disparada ao clicar
+     * @param {number} backgroundColor - (Opcional) Cor Hex. Padrão: 0xffffff (Branco)
+     * @param {number} fontSize - (Opcional) Tamanho da fonte em pixels. Padrão: 22
      */
-    constructor(scene, x, y, text, width, height, callback) {
+    constructor(scene, x, y, text, width, height, callback, backgroundColor = 0xffffff, fontSize = 22) {
         super(scene, x, y);
         this.scene = scene;
         this.callback = callback;
+        this.baseColor = backgroundColor;
 
         this.background = scene.add.nineslice(
-            0, 0, 
-            'button_bg', 
-            0, 
-            width, 
-            height, 
-            25, 25, 15, 15
+            0, 0,
+            'button_bg',
+            0,
+            width,
+            height,
+            20, 20, 15, 15
         );
         this.background.setOrigin(0.5);
+        this.background.setTint(this.baseColor);
         this.add(this.background);
 
-        this.textObject = scene.add.text(0, 0, text, {
-            fontFamily: 'sans-serif',
-            fontSize: '24px',
+        const textOffsetY = -2;
+
+        this.textObject = scene.add.text(0, textOffsetY, text, {
+            fontFamily: '"Tektur", monospace',
+            fontSize: `${fontSize}px`,
             color: '#fff',
             align: 'center',
-            fontStyle: 'bold'
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 6
         });
         this.textObject.setOrigin(0.5);
-        
-        
-        this.textObject.setShadow(2, 2, '#000000', 2, true, true);
-        
         this.add(this.textObject);
 
-        
         this.setSize(width, height);
-        
         this.setInteractive({ useHandCursor: true });
 
-        
-        this.on('pointerover', () => { 
-            this.textObject.setScale(1.05);
+        this.on('pointerover', () => {
+            this.background.setAlpha(0.8);
         });
 
-        
         this.on('pointerout', () => {
-            this.background.clearTint();
-            this.textObject.setScale(1);
+            this.background.setAlpha(1);
+            this.background.setTint(this.baseColor);
         });
 
         this.on('pointerdown', () => {
@@ -67,9 +67,6 @@ export class Button extends Phaser.GameObjects.Container {
                     if (this.callback) this.callback();
                 }
             });
-            
-            // this.scene.sound.play('click_sound');
-
         });
 
         scene.add.existing(this);

@@ -34,34 +34,27 @@ export class Player extends Phaser.GameObjects.Container {
         scene.add.existing(this);
     }
 
-    // Método para receber dano e atualizar visual
+
     takeDamage(amount) {
         this.currentHp -= amount;
         if (this.currentHp < 0) this.currentHp = 0;
 
-        // VERIFICAÇÃO DE TIPO PARA EFEITO VISUAL
-        // Se for um Sprite (tem textura), usa Tint.
-        // Se for um Retângulo (placeholder), usa FillStyle.
-
         if (this.sprite.clearTint) {
-            // --- LÓGICA PARA SPRITE (IMAGEM) ---
             this.scene.tweens.add({
                 targets: this.sprite,
                 alpha: 0.5,
-                tint: 0xff0000, // Tween de cor funciona em Sprites
+                tint: 0xff0000,
                 duration: 100,
                 yoyo: true,
                 repeat: 1,
                 onComplete: () => {
-                    this.sprite.clearTint(); // Remove o vermelho
+                    this.sprite.clearTint();
                     this.sprite.setAlpha(1);
                 }
             });
         } else {
-            // --- LÓGICA PARA RETÂNGULO (PLACEHOLDER) ---
-            // Muda a cor manualmente, pois tween de cor em shapes é complexo
-            const originalColor = 0x00ff00; // Verde original
-            this.sprite.setFillStyle(0xff0000); // Vira Vermelho
+            const originalColor = 0x00ff00;
+            this.sprite.setFillStyle(0xff0000);
 
             this.scene.tweens.add({
                 targets: this.sprite,
@@ -70,45 +63,36 @@ export class Player extends Phaser.GameObjects.Container {
                 yoyo: true,
                 repeat: 1,
                 onComplete: () => {
-                    this.sprite.setFillStyle(originalColor); // Volta pro Verde
+                    this.sprite.setFillStyle(originalColor);
                     this.sprite.setAlpha(1);
                 }
             });
         }
 
-        // Balanço da câmera (Impacto)
         this.scene.cameras.main.shake(100, 0.01);
 
         this.updateHpBar();
 
-        return this.currentHp <= 0; // Retorna TRUE se morreu
+        return this.currentHp <= 0;
     }
 
-    // Animação de Ataque (Avança e volta)
     playAttackAnim(targetX, onHitCallback) {
         const originalX = this.x;
 
         this.scene.tweens.add({
             targets: this,
-            x: originalX + 50, // Avança
+            x: originalX + 50,
             duration: 100,
             yoyo: true,
             onYoyo: () => {
-                // No momento que "bate" (metade da animação)
                 if (onHitCallback) onHitCallback();
             }
         });
     }
 
     updateHpBar() {
-        // Regra de 3 simples para a barra
         const pct = this.currentHp / this.maxHp;
 
-        // Ajusta a largura (78 é a largura máxima definida no constructor)
         this.hpBarFill.width = 78 * pct;
-
-        // Mantém centralizado ou alinhado à esquerda?
-        // Containers centralizam (0.5), então só mudar width funciona visualmente como "encolher pro centro"
-        // Se quiser encolher pra esquerda, teria que mudar origin e x.
     }
 }

@@ -9,9 +9,9 @@ export class SelectLeague extends Phaser.Scene {
 
         this.add.image(width / 2, height / 2, 'background').setDisplaySize(width, height).setTint(0x111111);
         this.add.text(width / 2, 80, "SELECIONE A LIGA", { fontSize: '40px', fontFamily: '"Orbitron"' }).setOrigin(0.5);
-        this.add.text(width / 2, 120, "Onde você vai jogar agora?", { fontSize: '18px', color: '#aaaaaa' }).setOrigin(0.5);
+        this.add.text(width / 2, 120, "Onde você vai jogar agora?", { fontSize: '20px', color: '#aaaaaa' }).setOrigin(0.5);
 
-        new Button(this, 100, 50, "VOLTAR", 120, 40, () => this.scene.start('MainMenu'));
+        new Button(this, 100, 50, "VOLTAR", 100, 40, () => this.scene.start('MainMenu'), 0xef4444, 20);
 
         this.listContainer = this.add.container(0, 0);
 
@@ -38,18 +38,18 @@ export class SelectLeague extends Phaser.Scene {
                     });
                 } else {
                     leagues.forEach(league => {
+                        let btnColor = 0x3c6382;
 
-                        const btn = new Button(this, width / 2, yPos, league.name.toUpperCase(), 400, 70, () => {
+                        if (league.name === 'Liga Geral') {
+                            btnColor = 0xffd700;
+                        }
+
+                        const btn = new Button(this, width / 2, yPos, league.name.toUpperCase(), 300, 70, () => {
                             this.scene.start('WorldSelect', {
                                 leagueId: league.id,
                                 leagueName: league.name
                             });
-                        });
-
-                        if (league.name === 'Liga Geral') {
-                            btn.background.setTint(0xffd700);
-                            btn.textObject.setColor('#000000');
-                        }
+                        }, btnColor, 35);
 
                         this.listContainer.add(btn);
                         yPos += 90;

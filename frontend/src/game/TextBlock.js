@@ -13,17 +13,13 @@ export class TextBlock extends Phaser.GameObjects.Container {
         this.onFail = onFail;
         this.isActive = true;
 
-        // Estilo
         this.fontFamily = '"JetBrains Mono", "Courier New", monospace';
         this.fontSize = '24px';
         this.fontStr = `bold ${this.fontSize} ${this.fontFamily}`;
 
-        // 1. LÓGICA DE LINHAS (Word Wrap)
         const MAX_WIDTH = 500;
         this.lines = this.wrapText(wordsArray, MAX_WIDTH, scene);
 
-        // 2. CÁLCULO DINÂMICO DE LARGURA (Correção do BG)
-        // Medimos qual é a linha mais longa para o fundo não ficar gigante
         let maxLinePixelWidth = 0;
         const measurer = scene.add.text(0, 0, "", { font: this.fontStr }).setVisible(false);
 
@@ -33,15 +29,12 @@ export class TextBlock extends Phaser.GameObjects.Container {
         });
         measurer.destroy();
 
-        // Largura final = A maior linha + Padding
         this.boxWidth = maxLinePixelWidth + 40;
         this.boxHeight = (this.lines.length * 30) + 40;
 
-        // Visual
         this.bg = scene.add.rectangle(0, 0, this.boxWidth, this.boxHeight, 0x323437, 0.9);
         this.add(this.bg);
 
-        // Textos (1 Grupo por linha)
         this.lineObjects = [];
         let startY = -(this.lines.length * 30) / 2 + 15;
 
@@ -145,7 +138,6 @@ export class TextBlock extends Phaser.GameObjects.Container {
         const globalInputLen = this.userInput.length;
         let charCounter = 0; 
 
-        // 1. Detecta onde está o erro
         let globalErrorIndex = -1;
         for(let i=0; i<globalInputLen; i++) {
             if(this.userInput[i] !== this.fullText[i]) { 
@@ -155,79 +147,52 @@ export class TextBlock extends Phaser.GameObjects.Container {
         }
         const hasError = (globalErrorIndex !== -1);
 
-        // 2. Define os Limites Visuais
-        // Verde: Vai até o erro ou até o fim do input (se correto)
         const greenLimitIndex = hasError ? globalErrorIndex : globalInputLen;
 
-        // Cursor Visual: AQUI ESTAVA O ERRO
-        // Se tiver erro, o cursor TRAVA no erro. Se não, segue o input.
         const cursorIndex = hasError ? globalErrorIndex : globalInputLen;
 
         this.lineObjects.forEach((lineObj) => {
             const lineLen = lineObj.fullText.length;
             const lineStartIndex = charCounter;
-            // const lineEndIndex = charCounter + lineLen; // (Não usado, mas bom pra ref)
-
             let localStrDone = "";
             let localStrCurrent = "";
             let localStrFuture = "";
             let isErrorInThisChar = false;
 
-            // Transforma índices globais em locais desta linha
             const localGreenLimit = greenLimitIndex - lineStartIndex;
             const localCursor = cursorIndex - lineStartIndex;
 
-            // --- A) PARTE VERDE (DONE) ---
             if (localGreenLimit > 0) {
                 const end = Math.min(lineLen, localGreenLimit);
                 localStrDone = lineObj.fullText.substring(0, end);
             }
 
-            // --- B) CARACTERE ATUAL (CURRENT - ERRO OU CURSOR) ---
-            // Verifica se o cursor visual cai dentro desta linha
+
             if (localCursor >= 0 && localCursor < lineLen) {
-                // Pegamos a letra ORIGINAL que deveria ser digitada
                 let char = lineObj.fullText[localCursor];
                 localStrCurrent = (char === ' ') ? '_' : char;
-                
-                // Se o cursor está aqui por causa de um erro, marca flag
                 if (hasError) isErrorInThisChar = true;
             }
 
-            // --- C) PARTE FUTURA (FUTURE) ---
-            // O futuro começa logo após o cursor atual
-            // Se o cursor estava nesta linha, o futuro é o resto da linha
-            // Se o cursor já passou desta linha, futuro é vazio
-            // Se o cursor ainda não chegou nesta linha, futuro é a linha toda
-            
             if (localCursor < lineLen) {
-                // Se o cursor está antes ou no meio desta linha
-                // O início do futuro é cursor + 1 (se tiver cursor nesta linha) ou 0
                 let startFuture = Math.max(0, localCursor + 1);
-                
-                // Caso especial: Se o cursor está em uma linha anterior, startFuture seria negativo
-                // Precisamos garantir que pegue a linha toda se o cursor estiver atrás
                 if (localCursor < 0) startFuture = 0;
 
                 localStrFuture = lineObj.fullText.substring(startFuture);
             }
 
-            // Renderiza
             lineObj.txtDone.setText(localStrDone);
             lineObj.txtCurrent.setText(localStrCurrent);
             lineObj.txtFuture.setText(localStrFuture);
 
-            // Estilos
             const font = { fontFamily: this.fontFamily, fontSize: this.fontSize, fontStyle: 'bold' };
             
             lineObj.txtDone.setStyle({ ...font, color: '#cccbc2' });
-            
-            // Se for erro, Vermelho. Se for cursor normal, Branco.
+        
             lineObj.txtCurrent.setStyle({ ...font, color: isErrorInThisChar ? '#c44653' : '#636568' });
             
             lineObj.txtFuture.setStyle({ ...font, color: '#636568' });
-
-            // Alinhamento
+            
             const w1 = lineObj.txtDone.width;
             const w2 = lineObj.txtCurrent.width;
             const w3 = lineObj.txtFuture.width;

@@ -15,7 +15,7 @@ export class Leagues extends Phaser.Scene {
         this.add.image(width / 2, height / 2, 'background').setDisplaySize(width, height).setTint(0x222222);
         this.add.text(width / 2, 50, "CENTRAL DE LIGAS", { fontSize: '40px', fontFamily: '"Orbitron"' }).setOrigin(0.5);
 
-        new Button(this, 100, 50, "VOLTAR", 120, 40, () => this.scene.start('MainMenu'));
+        new Button(this, 100, 50, "VOLTAR", 100, 40, () => this.scene.start('MainMenu'),0xef4444,20);
 
         this.viewRanking = this.add.container(0, 100);
         this.viewList = this.add.container(0, 100);
@@ -32,9 +32,9 @@ export class Leagues extends Phaser.Scene {
 
         const tabY = 120;
 
-        new Button(this, width * 0.3, tabY, "DETALHES / RANK", 200, 50, () => this.switchTab('ranking'));
-        new Button(this, width * 0.5, tabY, "LISTA DE LIGAS", 200, 50, () => this.switchTab('list'));
-        new Button(this, width * 0.7, tabY, "CRIAR NOVA", 200, 50, () => this.switchTab('create'));
+        new Button(this, width * 0.3, tabY, "DETALHES / RANK", 220, 50, () => this.switchTab('ranking'),0x3c6382);
+        new Button(this, width * 0.5, tabY, "LISTA DE LIGAS", 220, 50, () => this.switchTab('list'),0x3c6382);
+        new Button(this, width * 0.7, tabY, "CRIAR NOVA", 220, 50, () => this.switchTab('create'),0x3c6382);
 
         this.switchTab('list');
     }
@@ -102,7 +102,6 @@ export class Leagues extends Phaser.Scene {
                 this.fetchLeagues();
             }
 
-            // BOTÃO VER/ENTRAR
             const btnView = target.closest('.btn-view-league');
             if (btnView) {
                 const leagueId = btnView.dataset.id;
@@ -116,10 +115,10 @@ export class Leagues extends Phaser.Scene {
     buildCreateView() {
         const { width, height } = this.scale;
 
-        const title = this.add.text(width / 2, 130, "CRIAR NOVA LIGA", { fontSize: '28px' }).setOrigin(0.5);
+        const title = this.add.text(width / 2, 130, "CRIAR NOVA LIGA", { fontSize: '30px', fontFamily: '"Orbitron"' }).setOrigin(0.5);
         this.viewCreate.add(title);
 
-        this.domCreateForm = this.add.dom(width / 2, 350).createFromCache('form_createLeague');
+        this.domCreateForm = this.add.dom(width / 2, 330).createFromCache('form_createLeague');
         this.domCreateForm.setOrigin(0.5);
         this.domCreateForm.setVisible(false);
 
@@ -407,23 +406,21 @@ export class Leagues extends Phaser.Scene {
 
                 if (relation.is_member || relation.is_owner) {
                     const filterY = 160;
-                    const colorWeekly = this.rankFilter === 'weekly' ? 0x00ff00 : 0x555555;
-                    const btnWeekly = new Button(this, width / 2 - 80, filterY, "SEMANAL", 150, 35, () => {
+                    const colorWeekly = this.rankFilter === 'weekly' ? 0x0ea5e9 : 0x3c6382;
+                    const btnWeekly = new Button(this, width / 2 - 80, filterY, "SEMANAL", 120, 45, () => {
                         if (this.rankFilter !== 'weekly') {
                             this.rankFilter = 'weekly';
                             this.showLeagueDetails(leagueId);
                         }
-                    });
-                    btnWeekly.background.setTint(colorWeekly);
+                    },colorWeekly,20);
 
-                    const colorAllTime = this.rankFilter === 'all_time' ? 0x00ff00 : 0x555555;
-                    const btnAllTime = new Button(this, width / 2 + 80, filterY, "GERAL", 150, 35, () => {
+                    const colorAllTime = this.rankFilter === 'all_time' ? 0x0ea5e9 : 0x3c6382;
+                    const btnAllTime = new Button(this, width / 2 + 80, filterY, "GERAL", 120, 45, () => {
                         if (this.rankFilter !== 'all_time') {
                             this.rankFilter = 'all_time';
                             this.showLeagueDetails(leagueId);
                         }
-                    });
-                    btnAllTime.background.setTint(colorAllTime);
+                    },colorAllTime,20);
 
                     this.viewRanking.add([btnWeekly, btnAllTime]);
 
@@ -469,9 +466,8 @@ export class Leagues extends Phaser.Scene {
                                     alert("Erro ao sair.");
                                 }
                             }
-                        });
+                        },0xef4444);
 
-                        btnExit.background.setTint(0xff0000);
                         this.viewRanking.add(btnExit);
                     }
                 }
@@ -535,7 +531,7 @@ export class Leagues extends Phaser.Scene {
                 if (relation.is_owner) {
                     const btnManage = new Button(this, width * 0.85, 100, "GERENCIAR", 150, 40, () => {
                         this.openAdminPanel(leagueId, info.name);
-                    });
+                    },0xf6b93b,20);
                     this.viewRanking.add(btnManage);
                 }
 

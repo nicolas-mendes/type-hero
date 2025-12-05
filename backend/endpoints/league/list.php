@@ -25,7 +25,7 @@ try {
     $stmtCount = $pdo->prepare($sqlCount);
     $stmtCount->bindValue(':search', "%$search%", PDO::PARAM_STR);
     $stmtCount->execute();
-    
+
     $totalRecords = $stmtCount->fetchColumn();
     $totalPages = ceil($totalRecords / $limit);
     if ($totalPages < 1) $totalPages = 1;
