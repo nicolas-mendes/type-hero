@@ -26,8 +26,50 @@ export class GameScene extends Phaser.Scene {
         this.isPlayerTurn = true;
     }
 
+    preload(){
+        // --- HEROI (Player) ---
+        // Ajuste o caminho conforme sua pasta real
+        this.load.path = 'assets/worlds/characters/Hero/'; 
+        
+        // Note que seus nomes de arquivo PNG no JSON original eram "heroi pixel..."
+        // mas aqui vamos carregar com nomes padrão para facilitar
+        this.load.aseprite('heroi_idle', 'heroi_idle.png', 'heroi_idle.json');
+        this.load.aseprite('heroi_attack', 'heroi_at.png', 'heroi_at.json');
+        this.load.aseprite('heroi_hit', 'heroi_dn.png', 'heroi_dn.json');
+        this.load.aseprite('heroi_defend', 'heroi_defesa.png', 'heroi_defesa.json');
+
+        // --- LOBO (Inimigo) ---
+        this.load.path = 'assets/worlds/characters/Lobo1/';
+        
+        this.load.aseprite('lobo_idle', 'lobo_idle.png', 'lobo_idle.json');
+        this.load.aseprite('lobo_attack', 'lobo_at.png', 'lobo_at.json');
+        this.load.aseprite('lobo_hit', 'lobo_dn.png', 'lobo_dn.json');
+
+
+        this.load.path = 'assets/worlds/characters/Paladino/';
+        this.load.aseprite('paladino_idle', 'paladino_st.png', 'paladino_st.json');
+        this.load.aseprite('paladino_attack', 'paladino_at.png', 'paladino_at.json');
+        this.load.aseprite('paladino_hit', 'paladino_dn.png', 'paladino_dn.json');
+
+        this.load.path = 'assets/worlds/characters/Goblin1/';
+        // --- GOBLIN 1 ---
+        // Se tiver o idle do goblin 1, carregue aqui. Vou assumir que existe:
+        this.load.aseprite('goblin_idle', 'goblin_idle.png', 'goblin_idle.json'); 
+        this.load.aseprite('goblin_attack', 'goblin_at.png', 'goblin_at.json');
+        this.load.aseprite('goblin_hit', 'goblin_dn.png', 'goblin_dn.json');
+
+        this.load.path = 'assets/worlds/characters/Goblin2/';
+        // --- GOBLIN 2 ---
+        this.load.aseprite('goblin2_idle', 'goblin2_st.png', 'goblin2_st.json');
+        this.load.aseprite('goblin2_attack', 'goblin2_at.png', 'goblin2_at.json');
+        this.load.aseprite('goblin2_hit', 'goblin2_dn.png', 'goblin2_dn.json');
+    }
+
     create() {
+
         const { width, height } = this.scale;
+        
+        this.createAllAnims();  
 
         this.add.image(width / 2, height / 2, 'background').setDisplaySize(width, height).setTint(0x444444);
 
@@ -57,6 +99,61 @@ export class GameScene extends Phaser.Scene {
 
         this.startLevel();
     }
+
+    createAllAnims() {
+    // --- HEROI ---
+        // Tags usadas nos JSONs novos: "idle", "attack", "hit"
+        this.createAnimSafe('heroi_idle', 'heroi_idle', true);
+        this.createAnimSafe('heroi_attack', 'heroi_attack', false);
+        this.createAnimSafe('heroi_hit', 'heroi_hit', false);
+        this.createAnimSafe('heroi_defend', 'heroi_defend', false);
+
+        // --- LOBO ---
+        this.createAnimSafe('lobo_idle', 'lobo_idle', true);
+        this.createAnimSafe('lobo_attack', 'lobo_attack', false);
+        this.createAnimSafe('lobo_hit', 'lobo_hit', false);
+        // Paladino
+        this.createAnimSafe('paladino_idle', 'paladino_idle', true);
+        this.createAnimSafe('paladino_attack', 'paladino_attack', false);
+        this.createAnimSafe('paladino_hit', 'paladino_hit', false);
+
+        // Goblin 1
+        this.createAnimSafe('goblin_idle', 'goblin_idle', true);
+        this.createAnimSafe('goblin_attack', 'goblin_attack', false);
+        this.createAnimSafe('goblin_hit', 'goblin_hit', false);
+
+        // Goblin 2
+        this.createAnimSafe('goblin2_idle', 'goblin2_idle', true);
+        this.createAnimSafe('goblin2_attack', 'goblin2_attack', false);
+        this.createAnimSafe('goblin2_hit', 'goblin2_hit', false);
+    }
+
+    createAnimSafe(assetKey, uniqueAnimName, loop) {
+        // 1. Cria as animações do arquivo Aseprite
+        const animsCreated = this.anims.createFromAseprite(assetKey);
+        
+        if (animsCreated && animsCreated.length > 0) {
+            const anim = animsCreated[0]; //)
+
+
+            this.anims.remove(anim.key);
+
+            // 3. Renomeia para o nome único (ex: "goblin_attack")
+            anim.key = uniqueAnimName;
+            if (loop) anim.repeat = -1;
+
+            // 4. Adiciona de volta ao gerenciador com o nome novo e seguro
+            this.anims.add(uniqueAnimName, anim);
+            
+            console.log(`Animação criada com sucesso: ${uniqueAnimName}`);
+        } else {
+            console.warn(`Não foi possível criar animação para: ${assetKey}. Verifique se a TAG está no JSON.`);
+        }
+    }
+
+    // =================================================================
+    // CONTROLE DE FLUXO DA FASE
+    // =================================================================
 
     async startLevel() {
         try {
@@ -165,6 +262,9 @@ export class GameScene extends Phaser.Scene {
         const { width, height } = this.scale;
         this.isPlayerTurn = false;
 
+    // Toca a animação do inimigo atacando
+  
+
         if (!this.currentEnemyObject || !this.currentEnemyObject.active) return;
 
         // 1. Define a Posição (Em cima do Player)
@@ -183,12 +283,16 @@ export class GameScene extends Phaser.Scene {
             // Sucesso
             () => {
                 this.showFloatingText("BLOQUEADO!", '#ffff00');
+                this.player.playDefenseAnim();
                 this.time.delayedCall(500, () => this.startPlayerTurn());
             },
 
             // Falha
             () => {
+                this.currentEnemyObject.playAttack(() => {
+        // Só aplica o dano quando a animação terminar (ou durante)
                 this.damagePlayer(this.currentEnemyObject.damageValue);
+    });
             }
         );
     }
