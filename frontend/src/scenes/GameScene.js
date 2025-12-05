@@ -27,18 +27,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload(){
-        // --- HEROI (Player) ---
-        // Ajuste o caminho conforme sua pasta real
         this.load.path = 'assets/worlds/characters/Hero/'; 
-        
-        // Note que seus nomes de arquivo PNG no JSON original eram "heroi pixel..."
-        // mas aqui vamos carregar com nomes padrão para facilitar
         this.load.aseprite('heroi_idle', 'heroi_idle.png', 'heroi_idle.json');
         this.load.aseprite('heroi_attack', 'heroi_at.png', 'heroi_at.json');
         this.load.aseprite('heroi_hit', 'heroi_dn.png', 'heroi_dn.json');
         this.load.aseprite('heroi_defend', 'heroi_defesa.png', 'heroi_defesa.json');
 
-        // --- LOBO (Inimigo) ---
         this.load.path = 'assets/worlds/characters/Lobo1/';
         
         this.load.aseprite('lobo_idle', 'lobo_idle.png', 'lobo_idle.json');
@@ -52,14 +46,11 @@ export class GameScene extends Phaser.Scene {
         this.load.aseprite('paladino_hit', 'paladino_dn.png', 'paladino_dn.json');
 
         this.load.path = 'assets/worlds/characters/Goblin1/';
-        // --- GOBLIN 1 ---
-        // Se tiver o idle do goblin 1, carregue aqui. Vou assumir que existe:
         this.load.aseprite('goblin_idle', 'goblin_idle.png', 'goblin_idle.json'); 
         this.load.aseprite('goblin_attack', 'goblin_at.png', 'goblin_at.json');
         this.load.aseprite('goblin_hit', 'goblin_dn.png', 'goblin_dn.json');
 
         this.load.path = 'assets/worlds/characters/Goblin2/';
-        // --- GOBLIN 2 ---
         this.load.aseprite('goblin2_idle', 'goblin2_st.png', 'goblin2_st.json');
         this.load.aseprite('goblin2_attack', 'goblin2_at.png', 'goblin2_at.json');
         this.load.aseprite('goblin2_hit', 'goblin2_dn.png', 'goblin2_dn.json');
