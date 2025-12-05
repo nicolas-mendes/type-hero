@@ -20,6 +20,14 @@ export class Preload extends Phaser.Scene {
         this.load.html('table_infoLeague', 'assets/html/infoLeague.html');
         this.load.html('admin_panel', 'assets/html/adminPanel.html');
 
+        this.load.aseprite(
+            "goblin", 
+            "assets/worlds/characters/Goblin1/goblin_idle.png", 
+            "assets/worlds/characters/Goblin1/goblin_idle.json");
+        this.load.aseprite(
+            "heroi", 
+            "assets/worlds/characters/Hero/heroi_defesa.png", 
+            "assets/worlds/characters/Hero/heroi_defesa.json");
     }
 
     create() {
