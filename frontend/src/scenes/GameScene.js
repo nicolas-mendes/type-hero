@@ -55,6 +55,13 @@ export class GameScene extends Phaser.Scene {
             }
         });
 
+        const btnAbandon = new Button(this, width - 100, 50, "DESISTIR", 150, 40, () => {
+            this.handleGiveUp();
+        });
+
+        btnAbandon.background.setTint(0x550000);
+        btnAbandon.textObject.setFontSize(16);
+
         // 4. Inicia a lógica da fase
         this.startLevel();
     }
@@ -339,15 +346,88 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
-    handleDefeat() {
+    async handleGiveUp() {
+        this.inputManager.disable();
+
+        const confirmacao = window.confirm(
+            "⚠️ TEM CERTEZA?\n\n" +
+            "Se você desistir agora, sua run será encerrada e você perderá o progresso atual.\n" +
+            "A pontuação até aqui será salva no histórico."
+        );
+
+        if (!confirmacao) {
+            this.inputManager.enable();
+            return;
+        }
+
+        const { width, height } = this.scale;
+        const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
+        const txt = this.add.text(width / 2, height / 2, "Encerrando run...", { fontSize: '24px' }).setOrigin(0.5);
+
+        try {
+            const res = await GameAPI.gameOver(
+                this.runData.leagueId,
+                this.scoreGainedInThisLevel
+            );
+
+            if (res.status === 'sucesso') {
+                this.scene.start('WorldSelect', { leagueId: this.runData.leagueId });
+            } else {
+                alert("Erro ao encerrar: " + res.msg);
+                this.scene.start('WorldSelect', { leagueId: this.runData.leagueId });
+            }
+
+        } catch (e) {
+            console.error(e);
+            alert("Erro de conexão.");
+            this.scene.start('WorldSelect', { leagueId: this.runData.leagueId });
+        }
+    }
+
+    async handleDefeat() {
         this.inputManager.disable();
         const { width, height } = this.scale;
 
-        this.add.rectangle(width / 2, height / 2, width, height, 0x550000, 0.8);
-        this.add.text(width / 2, height / 2 - 50, "GAME OVER", { fontSize: '60px', color: '#ff0000', fontStyle: 'bold' }).setOrigin(0.5);
+        const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x330000, 0.9);
+        overlay.setDepth(1000);
 
-        new Button(this, width / 2, height / 2 + 50, "VOLTAR AO HUB", 250, 60, () => {
+        const txtTitle = this.add.text(width / 2, height / 2 - 80, "GAME OVER", {
+            fontSize: '60px', color: '#ff0000', fontStyle: 'bold', fontFamily: '"Orbitron"'
+        }).setOrigin(0.5).setDepth(1001);
+
+        const txtStatus = this.add.text(width / 2, height / 2, "Gravando seu legado...", {
+            fontSize: '20px', fontFamily: '"Roboto Mono"'
+        }).setOrigin(0.5).setDepth(1001);
+
+        try {
+            const res = await GameAPI.gameOver(
+                this.runData.leagueId,
+                this.scoreGainedInThisLevel,
+                {
+                    wpm: 0,
+                    accuracy: 0,
+                    words: 0,
+                    time: 0
+                }
+            );
+
+            if (res.status === 'sucesso') {
+                txtStatus.setText(`Pontuação Final: ${res.final_score}`);
+                txtStatus.setColor('#ffff00'); // Amarelo
+            } else {
+                console.warn(res.msg);
+                txtStatus.setText("Fim de jogo.");
+            }
+
+        } catch (e) {
+            console.error(e);
+            txtStatus.setText("Erro de conexão ao salvar histórico.");
+        }
+
+        const btnBack = new Button(this, width / 2, height / 2 + 100, "VOLTAR AO HUB", 250, 60, () => {
             this.scene.start('WorldSelect', { leagueId: this.runData.leagueId });
         });
+
+        btnBack.setDepth(1002);
     }
 }

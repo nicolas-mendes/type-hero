@@ -101,8 +101,14 @@ export const GameAPI = {
     },
 
     completeLevel: async (leagueId, levelId, hp, score, totalScoreAcc) => {
-        return await postData('game/complete_level.php', { leagueId, levelId, hp, score, totalScoreAcc: totalScoreAcc || 0});
+        return await postData('game/complete_level.php', { leagueId, levelId, hp, score, totalScoreAcc: totalScoreAcc || 0 });
     },
+
+    gameOver: async (leagueId, scoreInLevel, stats = {}) => {
+        return await postData('game/game_over.php', {
+            leagueId, scoreInLevel, avg_wpm: stats.wpm || 0, accuracy: stats.accuracy || 0, total_words: stats.words || 0, total_time: stats.time || 0 });
+    },
+
 
 
 
