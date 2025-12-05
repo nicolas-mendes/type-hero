@@ -34,6 +34,7 @@ export class Enemy extends Phaser.GameObjects.Container {
         if (this.sprite.width > 128) this.sprite.setScale(0.8);
 
         this.add(this.sprite);
+        this.sprite.setScale(1.5); 
 
         // 4. Nome e HP
         this.txtName = scene.add.text(0, -80, this.name.toUpperCase(), {

@@ -17,7 +17,7 @@ export class Player extends Phaser.GameObjects.Container {
             this.sprite.play('heroi_idle'); // Começa parado
             
 
-        this.sprite.setScale(2); 
+        this.sprite.setScale(3); 
         } else {
             console.warn("Animação 'heroi_idle' não encontrada. Usando quadrado verde.");
             this.sprite = scene.add.rectangle(0, 0, 64, 64, 0x00ff00);
