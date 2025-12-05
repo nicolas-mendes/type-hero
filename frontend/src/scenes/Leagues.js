@@ -115,7 +115,7 @@ export class Leagues extends Phaser.Scene {
     buildCreateView() {
         const { width, height } = this.scale;
 
-        const title = this.add.text(width / 2, 130, "CRIAR NOVA LIGA", { fontSize: '30px', fontFamily: '"Orbitron"' }).setOrigin(0.5);
+        const title = this.add.text(width / 2, 150, "CRIAR NOVA LIGA", { fontSize: '30px', fontFamily: '"Orbitron"' }).setOrigin(0.5);
         this.viewCreate.add(title);
 
         this.domCreateForm = this.add.dom(width / 2, 330).createFromCache('form_createLeague');
@@ -335,7 +335,7 @@ export class Leagues extends Phaser.Scene {
                     htmlRows = '<tr><td colspan="4" class="p-4 text-center">Nenhuma liga encontrada.</td></tr>';
                 } else {
                     response.data.forEach(league => {
-                        const rowClass = league.is_default == 1 ? 'border-l-4 border-green-500 bg-gray-800' : 'border-b border-gray-800 hover:bg-gray-800';
+                        const rowClass = league.is_default == 1 ? 'border-l-4 border-hero-purple bg-gray-800' : 'border-b border-gray-800 hover:bg-gray-800';
                         const ownerName = league.is_default == 1 ? 'SISTEMA' : (league.owner || 'Desconhecido');
 
                         htmlRows += `
@@ -345,7 +345,7 @@ export class Leagues extends Phaser.Scene {
                                 <td class="p-2 text-gray-400 text-sm">${league.member_count}</td>
                                 <td class="p-2 text-right">
                                     <button 
-                                        class="btn-view-league bg-green-600 text-black px-3 py-1 rounded text-xs font-bold hover:bg-white transition-colors"
+                                        class="btn-view-league bg-hero-purple text-black px-3 py-1 rounded text-xs font-bold hover:bg-white transition-colors"
                                         data-id="${league.id}"
                                         data-name="${league.name}"
                                     >
