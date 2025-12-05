@@ -39,6 +39,11 @@ export class GameScene extends Phaser.Scene {
         this.load.aseprite('lobo_attack', 'lobo_at.png', 'lobo_at.json');
         this.load.aseprite('lobo_hit', 'lobo_dn.png', 'lobo_dn.json');
 
+        this.load.path = 'assets/worlds/characters/Lobo2/';
+        this.load.aseprite('lobo2_idle', 'lobo2_idle.png', 'lobo2_idle.json');
+        this.load.aseprite('lobo2_attack', 'lobo2_at.png', 'lobo2_at.json');
+        this.load.aseprite('lobo2_hit', 'lobo2_dn.png', 'lobo2_dn.json');
+
 
         this.load.path = 'assets/worlds/characters/Paladino/';
         this.load.aseprite('paladino_idle', 'paladino_st.png', 'paladino_st.json');
@@ -62,7 +67,7 @@ export class GameScene extends Phaser.Scene {
         
         this.createAllAnims();  
 
-        this.add.image(width / 2, height / 2, 'background').setDisplaySize(width, height).setTint(0x444444);
+        this.add.image(width / 2, height / 2, 'fight_bg').setDisplaySize(width, height).setTint(0x444444);
 
         this.player = new Player(this, 375, height / 2 + 100, this.playerStats);
 
@@ -103,6 +108,10 @@ export class GameScene extends Phaser.Scene {
         this.createAnimSafe('lobo_idle', 'lobo_idle', true);
         this.createAnimSafe('lobo_attack', 'lobo_attack', false);
         this.createAnimSafe('lobo_hit', 'lobo_hit', false);
+        // --- LOBO 2 ---
+        this.createAnimSafe('lobo2_idle', 'lobo2_idle', true);
+        this.createAnimSafe('lobo2_attack', 'lobo2_attack', false);
+        this.createAnimSafe('lobo2_hit', 'lobo2_hit', false);
         // Paladino
         this.createAnimSafe('paladino_idle', 'paladino_idle', true);
         this.createAnimSafe('paladino_attack', 'paladino_attack', false);
@@ -141,10 +150,6 @@ export class GameScene extends Phaser.Scene {
             console.warn(`Não foi possível criar animação para: ${assetKey}. Verifique se a TAG está no JSON.`);
         }
     }
-
-    // =================================================================
-    // CONTROLE DE FLUXO DA FASE
-    // =================================================================
 
     async startLevel() {
         try {
@@ -190,28 +195,20 @@ export class GameScene extends Phaser.Scene {
             return;
         }
 
-        // 1. Limpa o inimigo anterior
         if (this.currentEnemyObject) {
             this.currentEnemyObject.destroy();
         }
 
-        // 2. Pega os dados do próximo inimigo
         const nextEnemyData = this.enemyQueue.shift();
 
-        // 3. Instancia a Classe Enemy
-        // Posicionado à direita
         const { width, height } = this.scale;
         this.currentEnemyObject = new Enemy(this, width - 375, height / 2 + 100, nextEnemyData);
 
-        // 4. Inicia o Turno do Jogador
         this.time.delayedCall(1000, () => {
             this.startPlayerTurn();
         });
     }
 
-    // =================================================================
-    // MÁQUINA DE ESTADOS (TURNOS)
-    // =================================================================
     startPlayerTurn() {
         const { width, height } = this.scale;
         this.isPlayerTurn = true;
@@ -253,12 +250,8 @@ export class GameScene extends Phaser.Scene {
         const { width, height } = this.scale;
         this.isPlayerTurn = false;
 
-    // Toca a animação do inimigo atacando
-  
-
         if (!this.currentEnemyObject || !this.currentEnemyObject.active) return;
 
-        // 1. Define a Posição (Em cima do Player)
         const targetX = this.player.x;
         const targetY = this.player.y - 200;
 
@@ -275,22 +268,18 @@ export class GameScene extends Phaser.Scene {
             () => {
                 this.showFloatingText("BLOQUEADO!", '#ffff00');
                 this.player.playDefenseAnim();
+                this.currentEnemyObject.playAttack()
                 this.time.delayedCall(500, () => this.startPlayerTurn());
             },
 
             // Falha
             () => {
                 this.currentEnemyObject.playAttack(() => {
-        // Só aplica o dano quando a animação terminar (ou durante)
                 this.damagePlayer(this.currentEnemyObject.damageValue);
     });
             }
         );
     }
-
-    // =================================================================
-    // AÇÕES DE COMBATE
-    // =================================================================
 
     damageEnemy(amount) {
         const isDead = this.currentEnemyObject.takeDamage(amount);

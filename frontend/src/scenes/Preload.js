@@ -14,6 +14,7 @@ export class Preload extends Phaser.Scene {
         this.load.image('avatar_player', 'assets/ui/avatar_player.png');
         this.load.image('avatar_leagues', 'assets/ui/avatar_leagues.png');
         this.load.image('avatar_play', 'assets/ui/avatar_play.png');
+        this.load.image('fight_bg', 'assets/ui/fight_bg.png');
 
         // HTML Templates
         this.load.html('form_login', 'assets/html/login.html');
@@ -22,22 +23,6 @@ export class Preload extends Phaser.Scene {
         this.load.html('table_listLeague', 'assets/html/listLeague.html');
         this.load.html('table_infoLeague', 'assets/html/infoLeague.html');
         this.load.html('admin_panel', 'assets/html/adminPanel.html');
-
-        this.load.aseprite("mob_goblin", "assets/worlds/characters/Goblin1/goblin_idle.png","assets/worlds/characters/Goblin1/goblin_idle.json");
-        this.load.aseprite('goblin_attack', 'assets/worlds/characters/Goblin1/goblin_at.png', 'assets/worlds/characters/Goblin1/goblin_at.json');
-        this.load.aseprite('goblin_hit', 'assets/worlds/characters/Goblin1/goblin_dn.png', 'assets/worlds/characters/Goblin1/goblin_dn.json');
-
-        this.load.aseprite("heroi","assets/worlds/characters/Hero/heroi_defesa.png","assets/worlds/characters/Hero/heroi_defesa.json");
-
-        this.load.aseprite('paladino_idle', 'assets/worlds/characters/Paladino/paladino_st.png', 'assets/worlds/characters/Paladino/paladino_st.json');
-        this.load.aseprite('paladino_attack', 'assets/worlds/characters/Paladino/paladino_at.png', 'assets/worlds/characters/Paladino/paladino_at.json');
-        this.load.aseprite('paladino_hit', 'assets/worlds/characters/Paladino/paladino_dn.png', 'assets/worlds/characters/Paladino/paladino_dn.json');
-
-
-
-        this.load.aseprite('goblin2_idle', 'assets/worlds/characters/Goblin2/goblin2_st.png', 'assets/worlds/characters/Goblin2/goblin2_st.json');
-        this.load.aseprite('goblin2_attack', 'assets/worlds/characters/Goblin2/goblin2_at.png', 'assets/worlds/characters/Goblin2/goblin2_at.json');
-        this.load.aseprite('goblin2_hit', 'assets/worlds/characters/Goblin2/goblin2_dn.png', 'assets/worlds/characters/Goblin2/goblin2_dn.json');
     }
 
     create() {

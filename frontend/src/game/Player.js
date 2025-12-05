@@ -4,17 +4,12 @@ export class Player extends Phaser.GameObjects.Container {
         super(scene, x, y);
         this.scene = scene;
 
-        // --- ATRIBUTOS ---
-        this.maxHp = stats.hp || 100; // Garante valor padrão
+        this.maxHp = stats.hp || 100;
         this.currentHp = this.maxHp;
 
-        // --- VISUAL ---
-
-        // 1. Sprite do Herói
-        // Tenta pegar a animação 'heroi_idle'. Se não existir, usa um quadrado verde de fallback.
         if (scene.anims.exists('heroi_idle')) {
             this.sprite = scene.add.sprite(0, 0, 'heroi_idle');
-            this.sprite.play('heroi_idle'); // Começa parado
+            this.sprite.play('heroi_idle');
             
 
         this.sprite.setScale(3); 
@@ -25,9 +20,8 @@ export class Player extends Phaser.GameObjects.Container {
         
         this.add(this.sprite);
 
-        // 2. Barra de Vida (Posicionada acima da cabeça)
-        this.hpBarBg = scene.add.rectangle(0, -60, 80, 10, 0x000000);
-        this.hpBarFill = scene.add.rectangle(-40, -60, 78, 8, 0xff0000).setOrigin(0, 0.5); // Ancora na esquerda
+        this.hpBarBg = scene.add.rectangle(0, -90, 80, 10, 0x000000);
+        this.hpBarFill = scene.add.rectangle(-40, -90, 78, 8, 0xff0000).setOrigin(0, 0.5);
         this.add([this.hpBarBg, this.hpBarFill]);
 
         this.updateHpBar();
@@ -56,12 +50,12 @@ export class Player extends Phaser.GameObjects.Container {
                     }
                 });
             } else {
-                // Fallback: Pisca vermelho se não tiver animação de hit
+          
                 this.sprite.setTint(0xff0000);
                 this.scene.time.delayedCall(200, () => this.sprite.clearTint());
             }
         } 
-        // Se for Quadrado (Fallback)
+      
         else {
              this.scene.tweens.add({
                 targets: this.sprite,
@@ -74,26 +68,26 @@ export class Player extends Phaser.GameObjects.Container {
 
         this.scene.cameras.main.shake(100, 0.01);
 
-        return this.currentHp <= 0; // Retorna TRUE se morreu
+        return this.currentHp <= 0; 
     }
 
-    // Animação de Ataque (Avança, bate e volta)
+    
     playAttackAnim(targetX, onHitCallback) {
         
-        // 1. Toca a animação de ataque
+        
         if (this.sprite.anims && this.scene.anims.exists('heroi_attack')) {
             this.sprite.play('heroi_attack');
             
-            // Volta para idle quando acabar o ataque
+            
             this.sprite.once('animationcomplete', () => {
                 this.sprite.play('heroi_idle');
             });
         }
 
-        // 2. Movimento físico (Tween) - Opcional, mas dá impacto
+        
         const originalX = this.x;
         
-        // Determina a direção (se o inimigo ta na direita, vai pra frente +)
+        
         const forwardDistance = 50; 
 
         this.scene.tweens.add({
@@ -109,7 +103,7 @@ export class Player extends Phaser.GameObjects.Container {
         });
     }
     playDefenseAnim() {
-        // 1. Toca a animação se existir
+        
         if (this.sprite.anims && this.scene.anims.exists('heroi_defend')) {
             this.sprite.play('heroi_defend');
             

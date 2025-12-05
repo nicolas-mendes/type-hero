@@ -97,7 +97,7 @@ try {
                     "hp" => 100,
                     "damage" => 10,
                     "playerAttackTime" => 15,
-                    "playerAttackWord" => 1
+                    "playerAttackWord" => 5
                 ]
             ]
         ]);
