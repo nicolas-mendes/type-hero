@@ -19,8 +19,7 @@ export class Preload extends Phaser.Scene {
         this.load.html('table_listLeague', 'assets/html/listLeague.html');
         this.load.html('table_infoLeague', 'assets/html/infoLeague.html');
         this.load.html('admin_panel', 'assets/html/adminPanel.html');
-        
-    }
+    }    
 
     create() {
         this.scene.start('Title');
