@@ -70,7 +70,9 @@ $sql = "
         `name` VARCHAR(50) NOT NULL,
         `sprite_key` VARCHAR(50) NOT NULL,
         `base_hp` INT NOT NULL,
-        `damage` INT DEFAULT 10
+        `damage` INT DEFAULT 10,
+        `word_streak_attack` INT DEFAULT 3,
+        `attack_time` INT DEFAULT 15
     ) ENGINE=InnoDB;
 
     CREATE TABLE IF NOT EXISTS `worlds` (
@@ -127,7 +129,9 @@ $sql = "
         `current_level_id` INT DEFAULT 1,
         `current_hp` INT DEFAULT 100, 
         `accumulated_score` INT DEFAULT 0, 
-        `modifiers` JSON NULL, 
+        `damage` INT DEFAULT 10,
+        `attack_time` INT DEFAULT 15,
+        `word_streak_attack` INT DEFAULT 5,
         `started_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
         `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,

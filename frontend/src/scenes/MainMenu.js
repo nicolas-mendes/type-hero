@@ -9,12 +9,13 @@ export class MainMenu extends Phaser.Scene {
 
     create() {
         const { width, height } = this.scale;
+        
         this.add.image(width / 2, height / 2, 'background').setDisplaySize(width, height).setTint(0x555555);
 
         //JANELA DE PROGRESSO
         const winProgress = new Window(this, width / 2, height / 2, 590, 475, "PROGRESSO ATUAL");
-        const btnPlay = new Button(this, 0, 200, "CONTINUAR CAMPANHA", 300, 60, () => {
-            this.scene.start('WorldSelect');
+        const btnPlay = new Button(this, 0, 180, "JOGAR", 300, 60, () => {
+            this.scene.start('SelectLeague');
         });
         winProgress.add([btnPlay]);
 
@@ -38,7 +39,8 @@ export class MainMenu extends Phaser.Scene {
 
         //JANELA DE LIGAS
         const winLeagues = new Window(this, width * 0.85, height / 2, 250, 400, "LIGAS");
-        const txtLigaInfo = this.add.text(0, -50, "Liga: Turma DS\nRank: #4", { align: 'center' }).setOrigin(0.5);
+        const leagueName = this.registry.get('league_name');
+        const txtLigaInfo = this.add.text(0, -50, `${leagueName}`, { align: 'center' }).setOrigin(0.5);
         const btnLeagues = new Button(this, 0, 100, "VER LIGAS", 200, 40, () => {
             this.scene.start('Leagues');
         });

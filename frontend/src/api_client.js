@@ -78,9 +78,30 @@ export const GameAPI = {
     exitLeague: async (leagueId) => {
         return await postData('league/exit.php', { leagueId });
     },
-    
+
     excludeLeague: async (leagueId) => {
         return await postData('league/exclude.php', { leagueId });
+    },
+
+    getMyLeagues: async () => {
+        return await postData('league/get_my_leagues.php', {});
+    },
+
+    //GAME
+    getHubData: async (leagueId) => {
+        return await postData('game/get_hub_data.php', { leagueId });
+    },
+
+    startRun: async (leagueId, isNew) => {
+        return await postData('game/start_run.php', { leagueId, isNew });
+    },
+
+    getLevelEnemies: async (levelId) => {
+        return await postData('game/get_level_enemies.php', { levelId });
+    },
+
+    completeLevel: async (leagueId, levelId, hp, score, totalScoreAcc) => {
+        return await postData('game/complete_level.php', { leagueId, levelId, hp, score, totalScoreAcc: totalScoreAcc || 0});
     },
 
 

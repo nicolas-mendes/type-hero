@@ -4,6 +4,9 @@ import { Login } from './scenes/Login.js';
 import { Register } from './scenes/Register.js';    
 import { MainMenu } from './scenes/MainMenu.js';    
 import { Leagues } from './scenes/Leagues.js';
+import { WorldSelect } from './scenes/WorldSelect.js';
+import { SelectLeague } from './scenes/selectLeague.js';
+import { GameScene } from './scenes/GameScene.js';
 
 
 const config = {
@@ -24,7 +27,10 @@ const config = {
         Login,
         Register,
         MainMenu,
-        Leagues
+        Leagues,
+        SelectLeague,
+        WorldSelect,
+        GameScene,
     ],
     scale: {
         mode: Phaser.Scale.FIT,
