@@ -14,13 +14,14 @@ Banco utilizado : MySQL
 
 # Como Rodar
 É necessario criar um arquivo .env na pasta backend com as credencias na sequinte estrutura:
-DB_HOST=localhost
-DB_USERNAME=root
-DB_PASSWORD=
-DB_DATABASE=type-hero
-MIGRATION_KEY = admin
+- DB_HOST=localhost
+- DB_USERNAME=root
+- DB_PASSWORD=
+- DB_DATABASE=type-hero
+- MIGRATION_KEY = admin
 E rodar o arquivo setup_database.php na pasta backend adicionando na url "?key=admin".
 Após isso, para a criação de dos inimigos, fases e inimigos por fase é necessario inserir no banco de dados do mysql esses inserts:
+
 -- =================================================================
 -- 1. MONSTROS (Bestiário)
 -- =================================================================
@@ -95,6 +96,6 @@ INSERT INTO level_enemies (level_id, monster_id, quantity) VALUES
 (3, 3, 1),
 (3, 4, 1),
 (3, 5, 1);
-(3, 5, 1); -- Líder Goblin virou mob comum
+(3, 5, 1);
 
 	
