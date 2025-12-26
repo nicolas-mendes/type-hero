@@ -104,6 +104,7 @@ Com o ambiente configurado, basta acessar o frontend:
 
 Uma visão geral de como o código está organizado:
 
+```
 type-hero/
 ├── backend/
 │   ├── endpoints/       # API (Auth, Game Logic, Leagues)
@@ -124,14 +125,16 @@ type-hero/
 │   └── index.html       # Ponto de entrada da aplicação
 │
 └── README.md
+```
 
 ---
 
 ## 📝 Licença
 
 Este projeto foi desenvolvido para fins educacionais como forma de estudo. Sinta-se livre para estudar o código, fazer forks ou contribuir.
-Feito por [Nicolas Mendes](https://github.com/nicolas-mendes)
-Feito por [Mateus Gabriel](https://github.com/Mateusgpk)
-Feito por [Rafael Tsuji](https://github.com/rafaeltsujiuchida)
+Feito por 
+    [Nicolas Mendes](https://github.com/nicolas-mendes)
+    [Mateus Gabriel](https://github.com/Mateusgpk)
+    [Rafael Tsuji](https://github.com/rafaeltsujiuchida)
 
 ---
