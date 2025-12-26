@@ -1,101 +1,139 @@
-# Type-hero (phaser 3 + PHP 8.0+)
-O sistema se baseia em um jogo de digitação utilizando o framework phaser para o frontend e o PHP puro para backend. Para comunicação com os endpoints foi criado um objeto com metodos para cada requisição diferente do jogo (register/login/ligas/pontuações/...).
-Banco utilizado : MySQL
+```markdown
+# ⚔️ Type Hero
 
-## Funcionalidades
-  Dentro do sistema há a possibilidade do usuário se registrar, de login com suas credencias, de criação de uma liga, de verificar as pontuações gerais e semanais de cada liga, e é claro, escolher a liga para jogar.
-### Ligas
-  É possível entrar em uma liga ou criar uma, as ligas são um sistema para jogadores competirem em si as maiores pontuações dentro dos níveis do jogo. O dono de uma liga tem capacidade de alterar nome e senha da liga, alem de remover jogadores.
-## Mecanicas
-  O jogo é dividido em turnos de ataque e defesa, as duas sendo efetuadas se o jogador conseguir digitar todas as palavras dentro do tempo de cada inimigo. Sendo divido em mundos com inimigos diversificados e numero de palavras diferentes.
-  As palavras são escolhidas aleatoriamente de uma array.
-### Animações
-  Animações foram feitas a partir de uma imagem de IA e posteriomente animadas. Utilizando funções do framework e jsons fornecidos na exportação foi possivel criar as animações mais facilmente. 
+![Badge Status](https://img.shields.io/badge/STATUS-FINALIZADO-green)
+![Badge PHP](https://img.shields.io/badge/Backend-PHP_Native-purple)
+![Badge Phaser](https://img.shields.io/badge/Frontend-Phaser.js-blue)
+![Badge MySQL](https://img.shields.io/badge/Database-MySQL-orange)
 
-# Como Rodar
-É necessario criar um arquivo .env na pasta backend com as credencias na sequinte estrutura:
-- DB_HOST=localhost
-- DB_USERNAME=root
-- DB_PASSWORD=
-- DB_DATABASE=type-hero
-- MIGRATION_KEY = admin
-E rodar o arquivo setup_database.php na pasta backend adicionando na url "?key=admin".
-Após isso, para a criação de dos inimigos, fases e inimigos por fase é necessario inserir no banco de dados do mysql esses inserts:
+> **Um RPG de turno baseado em digitação, onde suas palavras são suas armas.**
 
--- =================================================================
--- 1. MONSTROS (Bestiário)
--- =================================================================
-select * from monsters;
--- Monster 1: Goblin (O mais fraco - Mob básico)
-INSERT INTO monsters (id, name, sprite_key, base_hp, damage, word_streak_attack, attack_time) 
-VALUES (1, 'Goblin', 'goblin', 15, 5, 5, 8);
+![Screenshot do Jogo](caminho/para/imagem_ou_gif_do_gameplay.png)
+*(Substitua este link por um print ou GIF do jogo rodando)*
 
--- Monster 2: Lobo (Rápido - Mob médio)
-INSERT INTO monsters (id, name, sprite_key, base_hp, damage, word_streak_attack, attack_time) 
-VALUES (2, 'Lobo', 'lobo', 25, 10, 5, 8);
--- Monster 3: Lobo (Rápido - Mob médio)
-INSERT INTO monsters (id, name, sprite_key, base_hp, damage, word_streak_attack, attack_time) 
-VALUES (3, 'Lobo de Fogo', 'lobo2', 40, 15, 3, 2);
+## 📖 Sobre o Projeto
 
--- Monster 4: Líder Goblin (Chefe Intermediário)
-INSERT INTO monsters (id, name, sprite_key, base_hp, damage, word_streak_attack, attack_time) 
-VALUES (4, 'Líder Goblin', 'goblin2', 50, 20, 10, 10);
+**Type Hero** é um jogo web que mistura mecânicas de RPG clássico com desafios de digitação rápida. O objetivo é testar a velocidade e precisão do jogador em um ambiente de batalha por turnos.
 
--- Monster 5: Paladino (Chefe Final - O mais difícil)
-INSERT INTO monsters (id, name, sprite_key, base_hp, damage, word_streak_attack, attack_time) 
-VALUES (5, 'Paladino', 'paladino', 50, 35, 15, 12);
+Diferente de jogos de digitação tradicionais, aqui você precisa gerenciar o seu ataque e defesa sob pressão de tempo, enquanto progride através de um sistema de ligas competitivas.
 
--- =================================================================
--- 2. MUNDOS (3 Ambientes)
--- =================================================================
+### 🎮 Mecânicas Principais
+* **Combate por Turnos:**
+    * 🛡️ **Defesa:** Digite um bloco de palavras dentro do tempo limite para bloquear o ataque inimigo.
+    * ⚔️ **Ataque:** Digite palavras aleatórias rapidamente para causar dano ao oponente.
+* **Sistema de Ligas:** O jogador escolhe uma Liga antes de iniciar a *run*. O objetivo é chegar o mais longe possível com apenas **uma vida** (estilo Roguelike).
+* **Ranking:** Tabelas de classificação **Semanal** e **Geral** para cada liga.
+* **Progressão:** Inimigos e palavras tornam-se progressivamente mais difíceis conforme você avança.
 
-INSERT INTO worlds (id, name, order_index, bg_image) VALUES 
-(1, 'Floresta dos Goblins', 1, 'bg_forest'),
-(2, 'Trilha dos Lobos', 2, 'bg_mountain'),
-(3, 'Fortaleza Real', 3, 'bg_castle');
+---
 
--- =================================================================
--- 3. FASES (2 por Mundo)
--- =================================================================
+## 🛠 Tecnologias Utilizadas
 
--- MUNDO 1: FLORESTA
--- Fase 1-1: Tutorial (Sem Boss)
-INSERT INTO levels (id, world_id, order_index, name, boss_monster_id) 
-VALUES (1, 1, 1, 'Acampamento Goblin', NULL);
+O projeto foi desenvolvido utilizando tecnologias nativas, visando leveza e performance, sem dependência de frameworks pesados no backend ou gerenciadores de pacotes complexos.
 
+* **Frontend:**
+    * HTML5 & CSS3
+    * JavaScript (ES6+)
+    * [Phaser 3](https://phaser.io/) (Engine gráfica)
+* **Backend:**
+    * PHP (Nativo/Vanilla) - API RESTful
+* **Banco de Dados:**
+    * MySQL
 
+---
 
--- MUNDO 2: TRILHA
--- Fase 2-1: Emboscada (Sem Boss, mas muitos inimigos)
-INSERT INTO levels (id, world_id, order_index, name, boss_monster_id) 
-VALUES (2, 2, 1, 'Caminho Perigoso', NULL);
+## ⚙️ Pré-requisitos
 
+Para rodar este projeto localmente, você precisará de um ambiente de servidor web com suporte a PHP e MySQL. Recomenda-se:
 
--- MUNDO 3: FORTALEZA
--- Fase 3-1: Guarda do Castelo (Inimigos Fortes)
-INSERT INTO levels (id, world_id, order_index, name, boss_monster_id) 
-VALUES (3, 3, 1, 'Salão do Trono', NULL);
+* [XAMPP](https://www.apachefriends.org/pt_br/index.html) (Apache + MySQL)
+* Navegador Web Moderno (Chrome, Firefox, Edge)
 
--- =================================================================
--- 4. INIMIGOS POR FASE (Spawn List)
--- =================================================================
+---
 
--- Fase 1-1: Apenas 2 Goblins fáceis e 1 líder Goblin
-INSERT INTO level_enemies (level_id, monster_id, quantity) VALUES 
-(1, 1, 2), 
-(1, 4, 1);
+## 🚀 Instalação e Configuração
 
--- Fase 2-1: 2 Lobos (Mais dano que Goblins) e 1 Lobo de fogo
-INSERT INTO level_enemies (level_id, monster_id, quantity) VALUES 
-(2, 2, 2),
-(2, 3, 1);
+Siga os passos abaixo para rodar o jogo na sua máquina:
+
+### 1. Clonar o Repositório
+Baixe o projeto para dentro da pasta pública do seu servidor (no XAMPP, geralmente é `htdocs`).
+
+```bash
+cd C:/xampp/htdocs
+git clone [https://github.com/nicolas-mendes/type-hero.git](https://github.com/nicolas-mendes/type-hero)
+
+```
+
+### 2. Configurar Variáveis de Ambiente
+
+O backend precisa saber quais credenciais usar. Vá até a pasta `backend/`:
+
+1. Duplique ou renomeie o arquivo `.env.example` para `.env`.
+2. Abra o arquivo `.env` e configure conforme seu ambiente local:
 
 
--- Fase 3-1: 1 Lobo de fogo + 1 Líder Goblin + boss final(Paladino)
-INSERT INTO level_enemies (level_id, monster_id, quantity) VALUES 
-(3, 3, 1),
-(3, 4, 1),
-(3, 5, 1);
-(3, 5, 1);
+### 3. Criação Automática do Banco e Tabelas
 
-	
+Não é necessário criar o banco manualmente. O script de setup verifica se a database existe; se não, ele a cria automaticamente junto com todas as tabelas.
+
+Acesse a seguinte URL utilizando a chave MIGRATION_KEY como parametro (caso ela não seja definida no .env, será 'admin' por padrão) no seu navegador para rodar a instalação:
+`http://localhost/type-hero/backend/endpoints/setup_database.php?key=MIGRATION_KEY`
+
+> ✅ Se tudo der certo, você verá uma mensagem confirmando a criação do banco e das tabelas.
+
+### 4. Popular o Mundo (Seed)
+
+Para que o jogo não comece vazio, execute o script de "seeding". Ele irá instanciar os monstros iniciais, os mundos e as configurações das ligas.
+
+Acesse:
+`http://localhost/type-hero/backend/endpoints/seed_database.php`
+
+---
+
+## 🕹️ Como Jogar
+
+Com o ambiente configurado, basta acessar o frontend:
+
+1. Abra o navegador e vá para: `http://localhost/type-hero/frontend/`
+2. Faça seu **Cadastro** ou **Login**.
+3. No menu principal, selecione **"Jogar"**.
+4. Escolha uma **Liga** disponível.
+5. Prepare os dedos e boa sorte!
+
+---
+
+## 📂 Estrutura de Pastas
+
+Uma visão geral de como o código está organizado:
+
+type-hero/
+├── backend/
+│   ├── endpoints/       # API (Auth, Game Logic, Leagues)
+│   │   ├── auth/        # Login, Registro e Sessão
+│   │   ├── game/        # Lógica de combate e progresso
+│   │   ├── league/      # Gerenciamento de ligas e ranking
+│   │   ├── setup_database.php # Criação do DB e Tabelas
+│   │   └── seed_database.php  # População inicial de dados
+│   └── .env             # Configurações de Banco
+│
+├── frontend/
+│   ├── assets/          # Recursos visuais (HTMLs de UI, Imagens)
+│   ├── src/             # Lógica do jogo
+│   │   ├── game/        # Classes (Player, Enemy, TypingInput)
+│   │   ├── scenes/      # Cenas do Phaser (Menu, Jogo, Ligas)
+│   │   └── api_client.js # Comunicação com o Backend
+│   ├── phaser.js        # Core do Phaser
+│   └── index.html       # Ponto de entrada da aplicação
+│
+└── README.md
+
+---
+
+## 📝 Licença
+
+Este projeto foi desenvolvido para fins educacionais como forma de estudo. Sinta-se livre para estudar o código, fazer forks ou contribuir.
+Feito por [Nicolas Mendes](https://github.com/nicolas-mendes)
+Feito por [Mateus Gabriel](https://github.com/Mateusgpk)
+Feito por [Rafael Tsuji](https://github.com/rafaeltsujiuchida)
+
+---
