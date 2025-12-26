@@ -1,4 +1,3 @@
-```markdown
 # ⚔️ Type Hero
 
 ![Badge Status](https://img.shields.io/badge/STATUS-FINALIZADO-green)
@@ -8,8 +7,7 @@
 
 > **Um RPG de turno baseado em digitação, onde suas palavras são suas armas.**
 
-![Screenshot do Jogo](caminho/para/imagem_ou_gif_do_gameplay.png)
-*(Substitua este link por um print ou GIF do jogo rodando)*
+![Screenshot do Jogo](./docs/title.png)
 
 ## 📖 Sobre o Projeto
 
