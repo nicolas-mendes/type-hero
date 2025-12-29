@@ -1,6 +1,6 @@
 # ⚔️ Type Hero
 
-![Badge Status](https://img.shields.io/badge/STATUS-FINALIZADO-green)
+![Badge Status](https://img.shields.io/badge/STATUS-EM_DESENVOLVIMENTO-yellow)
 ![Badge PHP](https://img.shields.io/badge/Backend-PHP_Native-purple)
 ![Badge Phaser](https://img.shields.io/badge/Frontend-Phaser.js-blue)
 ![Badge MySQL](https://img.shields.io/badge/Database-MySQL-orange)
@@ -31,7 +31,7 @@ O projeto foi desenvolvido utilizando tecnologias nativas, visando leveza e perf
 
 * **Frontend:**
     * HTML5 & CSS3
-    * JavaScript (ES6+)
+    * JavaScript
     * [Phaser 3](https://phaser.io/) (Engine gráfica)
 * **Backend:**
     * PHP (Nativo/Vanilla) - API RESTful
@@ -72,21 +72,12 @@ O backend precisa saber quais credenciais usar. Vá até a pasta `backend/`:
 
 ### 3. Criação Automática do Banco e Tabelas
 
-Não é necessário criar o banco manualmente. O script de setup verifica se a database existe; se não, ele a cria automaticamente junto com todas as tabelas.
+Não é necessário criar o banco manualmente. O script de setup verifica se a database existe; se não, ele a cria automaticamente junto com todas as tabelas e as popula com uma progressão completa de fases.
 
 Acesse a seguinte URL utilizando a chave MIGRATION_KEY como parametro (caso ela não seja definida no .env, será 'admin' por padrão) no seu navegador para rodar a instalação:
 `http://localhost/type-hero/backend/endpoints/setup_database.php?key=MIGRATION_KEY`
 
 > ✅ Se tudo der certo, você verá uma mensagem confirmando a criação do banco e das tabelas.
-
-### 4. Popular o Mundo (Seed)
-
-Para que o jogo não comece vazio, execute o script de "seeding". Ele irá instanciar os monstros iniciais, os mundos e as configurações das ligas.
-
-Acesse:
-`http://localhost/type-hero/backend/endpoints/seed_database.php`
-
----
 
 ## 🕹️ Como Jogar
 
